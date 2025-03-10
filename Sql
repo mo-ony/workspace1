@@ -1,0 +1,53 @@
+CREATE TABLE Partenaire (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nom VARCHAR2(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE Produit (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code_produit VARCHAR2(50) NOT NULL UNIQUE,
+    nom VARCHAR2(255) NOT NULL,
+    partenaire_id NUMBER NOT NULL,
+    FOREIGN KEY (partenaire_id) REFERENCES Partenaire(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Utilisateur (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nom VARCHAR2(100) NOT NULL,
+    prenom VARCHAR2(100) NOT NULL,
+    email VARCHAR2(255) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR2(255) NOT NULL,
+    role VARCHAR2(50) NOT NULL CHECK (role IN ('ADMIN', 'USER')),
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Archivage (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    archive_par NUMBER NOT NULL,
+    produit_id NUMBER NOT NULL,
+    annee NUMBER NOT NULL,
+    mois NUMBER NOT NULL,
+    num_police VARCHAR2(50) NOT NULL,
+    nom VARCHAR2(100),
+    prenom VARCHAR2(100),
+    contrat BLOB NOT NULL,
+    montant_assure NUMBER,
+    montant_prime NUMBER,
+    FOREIGN KEY (archive_par) REFERENCES Utilisateur(id) ON DELETE SET NULL,
+    FOREIGN KEY (produit_id) REFERENCES Produit(id) ON DELETE CASCADE
+);
+
+CREATE TABLE ConnexionLog (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    utilisateur_id NUMBER NOT NULL,
+    date_connexion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    adresse_ip VARCHAR2(100),
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE Utilisateur ADD (
+    tentatives_echouees NUMBER DEFAULT 0,
+    verrouille_jusqu_a TIMESTAMP NULL
+);
