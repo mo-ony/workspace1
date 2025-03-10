@@ -1,0 +1,182 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <groupId>com.nuba-tek.b2c</groupId>
+  <artifactId>b2c-pom</artifactId>
+  <version>0.0.16-SNAPSHOT</version>
+  <packaging>pom</packaging>
+ 
+  <name>b2c-pom Parent</name>
+  <url>https://gitlab.labs.nuba-tek.com/cardif/b2c-pom/-/blob/develop/pom.xml</url>
+ 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <jacoco.coverage.percentage>0.70</jacoco.coverage.percentage>
+    <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+    <junit.version>4.13.2</junit.version>
+    <springboot.version>3.2.5</springboot.version>
+    <springframework.version>6.1.6</springframework.version>
+    <jacoco.version>0.8.11</jacoco.version>
+    <surefire.version>3.2.5</surefire.version>
+    <ojdbc8.version>23.3.0.23.09</ojdbc8.version> 
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>maven-group</id>
+      <url>https://nexus.labs.nuba-tek.com/repository/maven-public/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>maven-snapshots</id>
+      <url>https://nexus.labs.nuba-tek.com/repository/maven-snapshots/</url>
+    </snapshotRepository>		
+    <repository>
+      <id>maven-releases</id>
+      <url>https://nexus.labs.nuba-tek.com/repository/maven-releases/</url>
+    </repository>
+   </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <version>${springboot.version}</version>
+      <exclusions>
+        <exclusion>
+	   <groupId>org.springframework.boot</groupId>
+	   <artifactId>spring-boot-starter-logging</artifactId>
+	</exclusion>
+      </exclusions>
+    </dependency>
+		
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+      <version>${springboot.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${springboot.version}</version>
+      <scope>test</scope>
+   </dependency>
+
+   <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+   </dependency>
+     
+   <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springframework.version}</version>
+   </dependency>
+     
+ </dependencies>
+
+
+ <build>
+   <pluginManagement>
+     <plugins>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-deploy-plugin</artifactId>
+         <version>3.1.1</version>
+       </plugin>
+
+      <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-compiler-plugin</artifactId>
+		    <version>3.8.1</version>
+		    <configuration>
+		        <compilerArgs>
+		            <arg>-parameters</arg>
+		        </compilerArgs>
+		    </configuration>
+      </plugin>
+
+     </plugins>
+   </pluginManagement>
+   
+   <plugins>
+
+<!-- Plugins pour le deploiement vers nexus -->
+<plugin>
+   <groupId>org.apache.maven.plugins</groupId>
+   <artifactId>maven-deploy-plugin</artifactId>
+   <version>3.1.1</version>
+</plugin>
+
+<!-- Plugins pour la gestion de la version du projet dans le pom.xml -->
+   <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>build-helper-maven-plugin</artifactId>
+      <version>3.2.0</version>
+  </plugin>
+  <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>versions-maven-plugin</artifactId>
+      <version>2.8.1</version>
+  </plugin>
+
+				<!-- Pour les tests unitaires -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+        </plugin>
+
+				<plugin>
+		        <groupId>org.jacoco</groupId>
+		        <artifactId>jacoco-maven-plugin</artifactId>
+		        <version>${jacoco.version}</version>
+		
+		        <configuration>
+		          <excludes>
+		            <exclude>**/*Configuration.*</exclude>
+		            <exclude>**/*Properties.*</exclude>
+		            <exclude>**/*Converter.*</exclude>
+		            <exclude>**/*Utils.*</exclude>
+		            <exclude>**/XSS*</exclude>
+		            <exclude>**/*LoggingAspect.*</exclude>
+		          </excludes>
+		        </configuration>
+		
+		        <executions>
+		          <execution>
+		            <id>prepare-agent</id>
+		            <goals>
+		              <goal>prepare-agent</goal>
+		            </goals>
+		          </execution>
+		          <execution>
+		            <id>report</id>
+		            <goals>
+		              <goal>report</goal>
+		            </goals>
+		          </execution>
+		
+		        </executions>
+		      </plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${springboot.version}</version>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
