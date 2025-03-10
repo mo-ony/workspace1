@@ -1,0 +1,113 @@
+@import url("../../../styles/colors.css");
+
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.page-container {
+    box-shadow: 10px 13px 19.1px 0px rgba(0, 0, 0, 0.25);
+    width: 96%;
+    max-height: calc(100vh - 110px);
+    min-height: calc(100vh - 110px);
+    overflow: auto;
+    margin: 0 auto;
+    border-radius: 1.5rem;
+    padding: 3rem 4rem 3rem 3rem;
+}
+
+    /* Customize scrollbar */
+    .page-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    /* Handle */
+    .page-container::-webkit-scrollbar-thumb {
+        background: var(--brandcolor);
+        border-radius: 4px;
+    }
+
+    /* Track */
+    .page-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+h4 {
+    border: none;
+    color: var(--brandcolor);
+    padding-bottom: 2px;
+    font-weight: 600;
+}
+
+.texte {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.custom-table {
+    margin-top: 1.5rem;
+    border-radius: 5px !important;
+    border: 2px solid var(--grey061);
+    border-collapse: collapse; /* Collapse borders to prevent double borders */
+}
+
+    .custom-table th,
+    .custom-table td {
+        border-bottom: 1px solid var(--grey061) !important;
+        padding: 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background-color: transparent;
+    }
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: var(--green04) !important;
+    font-weight: 600;
+    color: var(--white01);
+}
+
+
+
+/*   .custom-table th {
+        text-align: center;
+    }*/
+
+.total-rows {
+    border-bottom: 1px solid var(--grey061);
+}
+
+.green-line-screening {
+    color: var(--grey01); 
+    font-size: 0.9rem;
+    cursor: pointer; 
+}
+
+    .green-line-screening.selected {
+        color: var(--brandcolor);
+        border-bottom: 2px solid var(--brandcolor);
+        padding-bottom: 2px;
+        font-weight: 600;
+    }
+
+.green-line {
+    color: var(--brandcolor);
+    border-bottom: 2px solid var(--brandcolor);
+    padding-bottom: 2px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.custoom-icon {
+    color: var(--red04);
+    background-color: transparent;
+    border: none !important;
+}
+
+.custom-icon:hover {
+    color: var(--red02);
+}
+
+.clicked {
+    color: var(--red02) !important;
+}

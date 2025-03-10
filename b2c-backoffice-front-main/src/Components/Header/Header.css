@@ -1,0 +1,38 @@
+@import url("../../styles/colors.css");
+
+.dropdown-toggle::after {
+	display: inline-block;
+	margin-left: 0.255em;
+	vertical-align: 0.255em;
+	content: "";
+	border-top: 0.3em solid;
+	border-right: 0.3em solid transparent;
+	border-bottom: 0;
+	border-left: 0.3em solid transparent;
+}
+
+.p-3.mb-3.border-bottom {
+	box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.25);
+}
+
+.dropdown.text-end.show {
+	position: absolute;
+	inset: 0px auto auto 0px;
+	margin: 0px;
+	transform: translate(1551px, 576px);
+}
+
+header .container,
+header .container-fluid,
+header .container-lg,
+header .container-md,
+header .container-sm,
+header .container-xl,
+header .container-xxl {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-lg-star {
+	width: calc(100vw - 10vw);
+}

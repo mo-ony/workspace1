@@ -1,0 +1,23 @@
+@import url("../../styles/colors.css");
+
+.row.flex-nowrap {
+	max-height: calc(100vh - 79px);
+}
+
+.custom-sidebar-width {
+	width: 12rem; /* Adjust this value to your preferred width */
+}
+
+.px-sm-2 {
+	background-color: var(--dark01);
+}
+
+#menu a {
+	color: var(--white01);
+}
+
+.active {
+	font-weight: bold;
+	color: var(--brandcolor) !important;
+	background-color: var(--dark01) !important;
+}

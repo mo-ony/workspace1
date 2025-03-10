@@ -1,0 +1,39 @@
+.auth-page-section {
+	max-height: 100vh;
+	overflow: hidden;
+}
+
+.auth-page-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+}
+
+.login-img-container {
+	flex: 1;
+	height: 100vh;
+}
+
+.login-img {
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+}
+
+.login-left-section {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	padding: 0 2rem;
+}
+.link-cardif {
+	color: var(--brandcolor) !important;
+	font-weight: normal;
+	text-decoration-color: var(--brandcolor) !important;
+}
+
+@media only screen and (max-width: 1200px) {
+	.login-img-container {
+		display: none;
+	}
+}

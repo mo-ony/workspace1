@@ -1,0 +1,22 @@
+@import url("../../../styles/colors.css");
+
+
+
+.login-backend-error {
+	padding: 1rem 1rem;
+	background-color: var(--red04);
+	color: var(--red02);
+	border: 1px solid var(--red02);
+	border-radius: 5px;
+	margin: 2rem 0;
+}
+
+.login-backend-success {
+	padding: 1rem 1rem;
+	background-color: #d1e7dd;
+	color: #75b798;
+	border: 1px solid #75b798;
+	border-radius: 5px;
+	margin: 2rem 0;
+}
+
