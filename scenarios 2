@@ -1,0 +1,2 @@
+- Si la requête retourne une réponse vide/ Contrat inexistant → Afficher un popup demandant si l'utilisateur veut tout de même archiver le contrat. Si oui, permettre la saisie manuelle des métadonnées et ajouter un flag pour signaler qu'il s'agit d'un contrat inexistant.
+- Si la requête retourne une erreur "Too many values returned" / trop de résultats→ Demander le nom et prénom, puis relancer la requête avec ces informations.
