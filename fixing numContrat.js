@@ -1,4 +1,6 @@
-          
+/* Chaque fichier ait son propre numéro de contrat et ses métadonnées.
+L'input du numéro de contrat et les métadonnées ne s'affichent que lorsque tu cliques sur un fichier.
+Le bouton du fichier devienne vert une fois qu'il est traité.          8*/
           
           import React, { useState } from 'react';
           import { Container, Button, TextField, Typography, Grid, Paper, Box, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
