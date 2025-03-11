@@ -1,0 +1,57 @@
+After installing Oracle 19c, here are the next steps:
+
+### 1. **Verify the Installation**
+Ensure that Oracle Database is properly installed and running:  
+- Open a terminal (or command prompt) and check the status of the database:
+  ```sh
+  sqlplus / as sysdba
+  ```
+  If successful, it will connect to the database.
+
+### 2. **Set Up Environment Variables (if not set)**  
+For Linux: Add these to `.bash_profile` or `.bashrc`:
+  ```sh
+  export ORACLE_HOME=/path/to/oracle/home
+  export PATH=$ORACLE_HOME/bin:$PATH
+  export ORACLE_SID=your_database_sid
+  ```
+
+### 3. **Check and Configure the Listener**
+- Check if the listener is running:
+  ```sh
+  lsnrctl status
+  ```
+- If it's not running, start it:
+  ```sh
+  lsnrctl start
+  ```
+- To configure it, edit `listener.ora` (usually found in `$ORACLE_HOME/network/admin`).
+
+### 4. **Create a New Database (if needed)**
+If you didn’t create a database during installation, use `DBCA`:
+  ```sh
+  dbca
+  ```
+Follow the GUI or CLI instructions to create a database.
+
+### 5. **Create a New Schema/User**
+- Connect to SQL*Plus as SYSDBA:
+  ```sh
+  sqlplus / as sysdba
+  ```
+- Create a new user (schema):
+  ```sql
+  CREATE USER my_schema IDENTIFIED BY my_password;
+  ```
+- Grant privileges:
+  ```sql
+  GRANT CONNECT, RESOURCE, DBA TO my_schema;
+  ```
+
+### 6. **Test the Connection**
+Try connecting with the newly created user:
+```sh
+sqlplus my_schema/my_password@localhost:1521/your_db_service_name
+```
+
+Do you need a specific configuration for your project?
