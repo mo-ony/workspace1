@@ -1,4 +1,6 @@
-          import { useState, useEffect } from "react";
+// tant que les trois champs (product, year et month) ne sont pas remplis. le le champ de saisie contractNumber est desactive
+
+import { useState, useEffect } from "react";
           
           const MyComponent = () => {
             const [product, setProduct] = useState("");
