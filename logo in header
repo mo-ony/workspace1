@@ -1,0 +1,25 @@
+// src/components/Header.js
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import logo from '../../logo.svg'; // Adjust the path if needed
+
+const Header = ({ onLogout }) => (
+  <AppBar position="static" style={{ backgroundColor: 'white', color: 'black' }}>
+    <Toolbar>
+      {/* Logo */}
+      <img src={logo} alt="Brand Logo" style={{ height: 40, marginRight: 10 }} />
+
+      {/* Title */}
+      <Typography variant="h6" style={{ flexGrow: 1 }}>
+        Admin Panel
+      </Typography>
+
+      {/* Logout Button */}
+      <Button color="inherit" onClick={onLogout}>
+        Logout
+      </Button>
+    </Toolbar>
+  </AppBar>
+);
+
+export default Header;
