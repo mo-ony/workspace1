@@ -1,3 +1,21 @@
+
+import lombok.Data;
+import java.math.BigDecimal;
+
+@Data
+public class ArchiveDTO {
+    private String numPolice;
+    private String nom;
+    private String prenom;
+    private int annee;
+    private int mois;
+    private Long produitId;
+    private Long archivePar;
+    private BigDecimal montantAssure;
+    private BigDecimal montantPrime;
+    private String contratBase64; // The contract file should be sent as a Base64 encoded string
+}
+
 CREATE SEQUENCE ARCHIVAGE_SEQ START WITH 1 INCREMENT BY 1;
 
 -- Générer l'ID unique
