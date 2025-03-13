@@ -1,16 +1,76 @@
+Voici la procédure mise à jour, encapsulée dans un package **`GED_PKG`**.
 
+---
 
+### 🛢 **Création du Package GED_PKG**
+```sql
+CREATE OR REPLACE PACKAGE GED_PKG AS 
+    PROCEDURE INSERT_ARCHIVAGE(
+        p_archive_par IN NUMBER,
+        p_produit_id IN NUMBER,
+        p_annee IN NUMBER,
+        p_mois IN NUMBER,
+        p_num_police IN VARCHAR2,
+        p_nom IN VARCHAR2,
+        p_prenom IN VARCHAR2,
+        p_contrat IN BLOB,
+        p_montant_assure IN NUMBER,
+        p_montant_prime IN NUMBER
+    );
+END GED_PKG;
+/
+```
 
+---
 
-package com.example.archivage.repository;
+### 🛢 **Implémentation de la Procédure dans le Package GED_PKG**
+```sql
+CREATE OR REPLACE PACKAGE BODY GED_PKG AS 
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+    PROCEDURE INSERT_ARCHIVAGE(
+        p_archive_par IN NUMBER,
+        p_produit_id IN NUMBER,
+        p_annee IN NUMBER,
+        p_mois IN NUMBER,
+        p_num_police IN VARCHAR2,
+        p_nom IN VARCHAR2,
+        p_prenom IN VARCHAR2,
+        p_contrat IN BLOB,
+        p_montant_assure IN NUMBER,
+        p_montant_prime IN NUMBER
+    ) 
+    IS
+        v_count NUMBER;
+    BEGIN
+        -- Vérifier l'unicité du contrat
+        SELECT COUNT(*) INTO v_count
+        FROM Archivage
+        WHERE num_police = p_num_police AND nom = p_nom AND prenom = p_prenom;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+        IF v_count > 0 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Le contrat ' || p_num_police || ' existe déjà pour ' || p_nom || ' ' || p_prenom);
+        END IF;
 
+        -- Insérer l'archive
+        INSERT INTO Archivage (
+            archive_par, produit_id, annee, mois, num_police, 
+            nom, prenom, contrat, montant_assure, montant_prime
+        ) VALUES (
+            p_archive_par, p_produit_id, p_annee, p_mois, p_num_police, 
+            p_nom, p_prenom, p_contrat, p_montant_assure, p_montant_prime
+        );
+
+        COMMIT;
+    END INSERT_ARCHIVAGE;
+
+END GED_PKG;
+/
+```
+
+---
+
+### 📌 **Modification du Repository pour Appeler la Procédure**
+```java
 @Repository
 public class ArchivageRepository {
 
@@ -27,7 +87,7 @@ public class ArchivageRepository {
     }
 
     public void saveArchive(Map<String, Object> archive) {
-        String sql = "CALL INSERT_ARCHIVAGE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "CALL GED_PKG.INSERT_ARCHIVAGE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 archive.get("archivePar"),
                 archive.get("produitId"),
@@ -42,45 +102,17 @@ public class ArchivageRepository {
         );
     }
 }
+```
 
+---
 
+### ✅ **Résumé des modifications :**
+1. 📦 **Encapsulation de la procédure** dans un package `GED_PKG`.
+2. 🔄 **Appel depuis Spring Boot** via `CALL GED_PKG.INSERT_ARCHIVAGE(...)`.
+3. 🔍 **Vérification d'unicité** avant insertion.
+4. 📂 **Gestion des fichiers** : uniquement PDF via le Service.
 
-
-
-
-
-CREATE OR REPLACE PROCEDURE INSERT_ARCHIVAGE(
-    p_archive_par IN NUMBER,
-    p_produit_id IN NUMBER,
-    p_annee IN NUMBER,
-    p_mois IN NUMBER,
-    p_num_police IN VARCHAR2,
-    p_nom IN VARCHAR2,
-    p_prenom IN VARCHAR2,
-    p_contrat IN BLOB,
-    p_montant_assure IN NUMBER,
-    p_montant_prime IN NUMBER
-)
-IS
-    v_count NUMBER;
-BEGIN
-    -- Vérifier l'unicité
-    SELECT COUNT(*) INTO v_count
-    FROM Archivage
-    WHERE num_police = p_num_police AND nom = p_nom AND prenom = p_prenom;
-
-    IF v_count > 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Le contrat ' || p_num_police || ' existe déjà pour ' || p_nom || ' ' || p_prenom);
-    END IF;
-
-    -- Insérer l'archive
-    INSERT INTO Archivage (archive_par, produit_id, annee, mois, num_police, nom, prenom, contrat, montant_assure, montant_prime)
-    VALUES (p_archive_par, p_produit_id, p_annee, p_mois, p_num_police, p_nom, p_prenom, p_contrat, p_montant_assure, p_montant_prime);
-    
-    COMMIT;
-END INSERT_ARCHIVAGE;
-/
-
+💡 **C'est prêt à être testé !** 🚀
 
 
 
