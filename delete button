@@ -1,0 +1,53 @@
+import { IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+
+const handleRemoveFile = (fileToRemove) => {
+  setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
+
+  // Nettoyage des métadonnées et des numéros de contrat
+  setContractNumbers((prev) => {
+    const updatedContracts = { ...prev };
+    delete updatedContracts[fileToRemove.name];
+    return updatedContracts;
+  });
+
+  setFileMetadata((prev) => {
+    const updatedMetadata = { ...prev };
+    delete updatedMetadata[fileToRemove.name];
+    return updatedMetadata;
+  });
+
+  setProcessedFiles((prev) => {
+    const updatedSet = new Set(prev);
+    updatedSet.delete(fileToRemove.name);
+    return updatedSet;
+  });
+
+  if (selectedFileName === fileToRemove.name) {
+    setSelectedPdf(null);
+    setSelectedFileName(null);
+  }
+};
+
+
+
+<Box sx={{ maxHeight: '200px', overflowY: 'auto' }}>
+  {files.map((file, index) => (
+    <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+      <StyledButton
+        onClick={() => handlePdfClick(file)}
+        fullWidth
+        sx={{ 
+          flexGrow: 1, 
+          backgroundColor: processedFiles.has(file.name) ? 'lightgreen' : 'lightcoral' 
+        }}
+      >
+        {file.name}
+      </StyledButton>
+      <IconButton onClick={() => handleRemoveFile(file)} sx={{ ml: 1, color: 'red' }}>
+        <DeleteIcon />
+      </IconButton>
+    </Box>
+  ))}
+</Box>
