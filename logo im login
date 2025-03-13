@@ -1,0 +1,99 @@
+import React, { useState } from 'react';
+import { Container, Card, CardContent, TextField, Button, Typography, Box } from '@mui/material';
+import { styled } from '@mui/system';
+import logo from '../../logo.svg'; // Adjust the path if needed
+
+// BNP Paribas color palette
+const primaryColor = '#007A33'; // BNP Green
+const secondaryColor = '#FFFFFF'; // White
+const accentColor = '#121212'; // Dark for contrast
+
+const StyledCard = styled(Card)({
+  maxWidth: 400,
+  margin: 'auto',
+  marginTop: '80px',
+  padding: '20px',
+  backgroundColor: secondaryColor, // White background
+  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+});
+
+const StyledButton = styled(Button)({
+  marginTop: '20px',
+  backgroundColor: primaryColor,
+  color: secondaryColor,
+  '&:hover': {
+    backgroundColor: '#005a24', // Darker green on hover
+  },
+});
+
+const StyledTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: primaryColor,
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: primaryColor,
+    },
+    '&:hover fieldset': {
+      borderColor: '#005a24',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: primaryColor,
+    },
+  },
+});
+
+const Login = ({ onLogin }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Perform login logic
+    if (username === 'admin' && password === 'password') {
+      onLogin();
+    } else {
+      alert('Invalid credentials');
+    }
+  };
+
+  return (
+    <Container>
+      <Box display="flex" justifyContent="center" mb={2} mt={5}>
+        <img src={logo} alt="BNP Paribas Logo" style={{ height: 60 }} />
+      </Box>
+
+      <StyledCard>
+        <CardContent>
+          <Typography variant="h4" gutterBottom align="center" color={accentColor}>
+            Login
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <StyledTextField
+              label="Username"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <StyledTextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <StyledButton type="submit" variant="contained" fullWidth>
+              Login
+            </StyledButton>
+          </form>
+        </CardContent>
+      </StyledCard>
+    </Container>
+  );
+};
+
+export default Login;
