@@ -1,3 +1,10 @@
+CREATE SEQUENCE ARCHIVAGE_SEQ START WITH 1 INCREMENT BY 1;
+
+-- Générer l'ID unique
+        SELECT 'ARCH_' || LPAD(ARCHIVAGE_SEQ.NEXTVAL, 6, '0') INTO v_id FROM DUAL;
+
+
+
 Voici la procédure mise à jour, encapsulée dans un package **`GED_PKG`**.
 
 ---
