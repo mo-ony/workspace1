@@ -1,0 +1,116 @@
+Yes! You can use `SimpleJdbcCall` to call the stored procedure in Oracle. The error **"Définition manquante"** usually happens when:  
+
+1. The procedure is **not found** in the database schema.  
+2. The procedure is **not in the right package** (e.g., should be `GED_PKG.SAVE_ARCHIVE`).  
+3. The procedure parameters are **not correctly mapped** in Java.  
+
+---
+
+### ✅ **Steps to Fix Using `SimpleJdbcCall`**
+- Call the procedure using `SimpleJdbcCall` with the correct package name.  
+- Ensure input parameters match the Oracle procedure.  
+- Extract results correctly.
+
+---
+
+### 📌 **Update: `ArchivageRepository.java`**
+```java
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public class ArchivageRepository {
+    
+    private final JdbcTemplate jdbcTemplate;
+    private SimpleJdbcCall saveArchiveProcedure;
+
+    public ArchivageRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.saveArchiveProcedure = new SimpleJdbcCall(jdbcTemplate)
+                .withCatalogName("GED_PKG")  // ✅ Name of the Oracle package
+                .withProcedureName("SAVE_ARCHIVE")  // ✅ Procedure inside the package
+                .declareParameters(
+                        new SqlParameter("p_num_police", Types.VARCHAR),
+                        new SqlParameter("p_nom", Types.VARCHAR),
+                        new SqlParameter("p_prenom", Types.VARCHAR),
+                        new SqlParameter("p_annee", Types.NUMERIC),
+                        new SqlParameter("p_mois", Types.NUMERIC),
+                        new SqlParameter("p_produit_id", Types.NUMERIC),
+                        new SqlParameter("p_archive_par", Types.NUMERIC),
+                        new SqlParameter("p_montant_assure", Types.NUMERIC),
+                        new SqlParameter("p_montant_prime", Types.NUMERIC),
+                        new SqlParameter("p_contrat", Types.BLOB),
+                        new SqlOutParameter("p_status", Types.VARCHAR)  // ✅ Output message
+                );
+    }
+
+    public String saveArchive(ArchiveDTO archive) {
+        Map<String, Object> result = saveArchiveProcedure.execute(
+                Map.of(
+                        "p_num_police", archive.getNumPolice(),
+                        "p_nom", archive.getNom(),
+                        "p_prenom", archive.getPrenom(),
+                        "p_annee", archive.getAnnee(),
+                        "p_mois", archive.getMois(),
+                        "p_produit_id", archive.getProduitId(),
+                        "p_archive_par", archive.getArchivePar(),
+                        "p_montant_assure", archive.getMontantAssure(),
+                        "p_montant_prime", archive.getMontantPrime(),
+                        "p_contrat", archive.getContratBase64() != null ? 
+                                      Base64.getDecoder().decode(archive.getContratBase64()) : null
+                )
+        );
+
+        return (String) result.get("p_status");  // ✅ Return the procedure output
+    }
+}
+```
+
+---
+
+### 📌 **Update: `ArchivageService.java`**
+```java
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class ArchivageService {
+
+    private final ArchivageRepository archivageRepository;
+
+    public ArchivageService(ArchivageRepository archivageRepository) {
+        this.archivageRepository = archivageRepository;
+    }
+
+    public void saveArchives(List<ArchiveDTO> archives) {
+        for (ArchiveDTO archive : archives) {
+            String status = archivageRepository.saveArchive(archive);
+            if (!"SUCCESS".equalsIgnoreCase(status)) {
+                throw new RuntimeException("Erreur : " + status);
+            }
+        }
+    }
+}
+```
+
+---
+
+### ✅ **Advantages of Using `SimpleJdbcCall`**
+✔ No need to manually write SQL queries.  
+✔ Handles stored procedures with parameters easily.  
+✔ Maps Java types to Oracle types automatically.  
+
+---
+
+### 🛠 **Fixing "Définition Manquante"**
+If you still get the error, check these:
+1. Run `SELECT OBJECT_NAME FROM USER_PROCEDURES WHERE OBJECT_NAME = 'SAVE_ARCHIVE';`
+   - If no result → Procedure is missing in `GED_PKG`.
+2. Run `SELECT * FROM ALL_ARGUMENTS WHERE OBJECT_NAME = 'SAVE_ARCHIVE';`
+   - Check parameter names and types.
+
+🚀 **Now your repository correctly calls the stored procedure! Let me know if you need debugging help.**
