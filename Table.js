@@ -32,24 +32,34 @@ const contratsData = [
   { partenaire: "Partenaire 2", produit: "Produit B", annee: "2023", mois: "Mars", numPolice: "54321", nom: "Durand", prenom: "Paul", dateNaissance: "1985-09-22", dateEffet: "2023-03-01", montantAssure: "20,000€", operateur: "Generali", dateArchivage: "2024-08-01" },
 ];
 
+
+
 const getGroupedData = (data) => {
   const grouped = {};
   data.forEach((contract) => {
     const { partenaire, produit, annee, mois } = contract;
-    if (!grouped[partenaire]) grouped[partenaire] = { count: 0 };
+
+    if (!grouped[partenaire]) grouped[partenaire] = { count: 0, contracts: [], produits: {} };
     grouped[partenaire].count++;
+    grouped[partenaire].contracts.push(contract);
 
-    if (!grouped[partenaire][produit]) grouped[partenaire][produit] = { count: 0 };
-    grouped[partenaire][produit].count++;
+    if (!grouped[partenaire].produits[produit]) grouped[partenaire].produits[produit] = { count: 0, contracts: [], annees: {} };
+    grouped[partenaire].produits[produit].count++;
+    grouped[partenaire].produits[produit].contracts.push(contract);
 
-    if (!grouped[partenaire][produit][annee]) grouped[partenaire][produit][annee] = { count: 0 };
-    grouped[partenaire][produit][annee].count++;
+    if (!grouped[partenaire].produits[produit].annees[annee]) grouped[partenaire].produits[produit].annees[annee] = { count: 0, contracts: [], mois: {} };
+    grouped[partenaire].produits[produit].annees[annee].count++;
+    grouped[partenaire].produits[produit].annees[annee].contracts.push(contract);
 
-    if (!grouped[partenaire][produit][annee][mois]) grouped[partenaire][produit][annee][mois] = { count: 0 };
-    grouped[partenaire][produit][annee][mois].count++;
+    if (!grouped[partenaire].produits[produit].annees[annee].mois[mois]) grouped[partenaire].produits[produit].annees[annee].mois[mois] = { count: 0, contracts: [] };
+    grouped[partenaire].produits[produit].annees[annee].mois[mois].count++;
+    grouped[partenaire].produits[produit].annees[annee].mois[mois].contracts.push(contract);
   });
+
   return grouped;
 };
+
+
 
 const PdfTable = () => {
   const [expanded, setExpanded] = useState({});
