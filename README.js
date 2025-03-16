@@ -1,3 +1,16 @@
+
+La semaine dernière, on a implémenté le design de l'interface d'authentification et avancé sur l'interface d’indexation. Pour cette semaine, l’objectif est de travailler sur la deuxième interface, qui concerne l’habillage de la base de données, à l’exception de la fonctionnalité de recherche, qui sera implémentée la semaine prochaine.  
+
+En parallèle, la semaine dernière, on avait proposé une approche pour les deux scénarios *(expliquer brièvement les deux scénarios)*. Si vous validez cette approche, on pourra commencer à l’implémenter dès cette semaine.  
+
+Dites-moi si vous avez des remarques ou suggestions. Et sinon, jusqu’à présent, je développe en local sur mon PC, mais on va essayer d’ici dimanche prochain de déployer notre avancement sur le serveur pour que vous puissiez commencer à tester la solution.
+
+
+
+
+
+
+
 Tu n’as pas besoin de créer un microservice pour chaque base de données. Spring Boot permet de configurer plusieurs sources de données dans le même projet. Voici les options possibles :  
 
 ### **1. Configurer deux sources de données dans le même service**  
