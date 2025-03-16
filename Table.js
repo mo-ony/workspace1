@@ -1,174 +1,200 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Container, Table, TableBody, TableCell, TableHead, TableRow, IconButton,
-  Typography, TextField, Box, Grid, Collapse, List, ListItem, ListItemText, ListItemButton
-} from '@mui/material';
-import { ExpandLess, ExpandMore, PictureAsPdf, GetApp, SaveAlt } from '@mui/icons-material';
-import { DownloadTableExcel } from 'react-export-table-to-excel';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+  Typography,
+  TextField,
+  Box,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Collapse,
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { DownloadTableExcel } from "react-export-table-to-excel";
 
-// Styles aux couleurs de BNP Paribas
-const styles = {
-  sidebar: { backgroundColor: '#006341', color: 'white', padding: '10px', height: '100%' },
-  tableHeader: { backgroundColor: '#333', color: 'white' },
-  tableRow: { backgroundColor: '#f5f5f5' },
-};
+// ✅ Couleurs adaptées au style BNP Paribas
+const BNP_GREEN = "#009e60";
+const BNP_DARK = "#003c30";
 
-const contractsData = [
+const contratsData = [
   {
-    partner: 'Partenaire A',
-    products: [
-      {
-        name: 'Produit 1',
-        years: {
-          2023: { months: { Janvier: 5, Février: 8 } },
-          2024: { months: { Mars: 12, Avril: 9 } }
-        }
-      },
-      {
-        name: 'Produit 2',
-        years: {
-          2023: { months: { Mai: 7, Juin: 4 } }
-        }
-      }
-    ]
+    partenaire: "Partenaire 1",
+    produit: "Produit A",
+    annee: "2024",
+    mois: "Janvier",
+    numPolice: "12345",
+    nom: "Dupont",
+    prenom: "Jean",
+    dateNaissance: "1980-05-12",
+    dateEffet: "2024-01-01",
+    montantAssure: "10,000€",
+    operateur: "AXA",
+    dateArchivage: "2024-06-01",
   },
   {
-    partner: 'Partenaire B',
-    products: [
-      {
-        name: 'Produit 3',
-        years: {
-          2024: { months: { Juillet: 15, Août: 20 } }
-        }
-      }
-    ]
-  }
+    partenaire: "Partenaire 1",
+    produit: "Produit A",
+    annee: "2024",
+    mois: "Février",
+    numPolice: "67890",
+    nom: "Martin",
+    prenom: "Sophie",
+    dateNaissance: "1990-07-15",
+    dateEffet: "2024-02-01",
+    montantAssure: "15,000€",
+    operateur: "BNP",
+    dateArchivage: "2024-07-01",
+  },
+  {
+    partenaire: "Partenaire 2",
+    produit: "Produit B",
+    annee: "2023",
+    mois: "Mars",
+    numPolice: "54321",
+    nom: "Durand",
+    prenom: "Paul",
+    dateNaissance: "1985-09-22",
+    dateEffet: "2023-03-01",
+    montantAssure: "20,000€",
+    operateur: "Generali",
+    dateArchivage: "2024-08-01",
+  },
 ];
 
-const ContractList = () => {
-  const [selectedContracts, setSelectedContracts] = useState([]);
-  const [expandedPartners, setExpandedPartners] = useState({});
-  const [expandedProducts, setExpandedProducts] = useState({});
-  const [expandedYears, setExpandedYears] = useState({});
+// 🔥 Regroupe les contrats par Partenaire > Produit > Année > Mois
+const getGroupedData = (data) => {
+  const grouped = {};
+  data.forEach((contract) => {
+    const { partenaire, produit, annee, mois } = contract;
+    if (!grouped[partenaire]) grouped[partenaire] = {};
+    if (!grouped[partenaire][produit]) grouped[partenaire][produit] = {};
+    if (!grouped[partenaire][produit][annee]) grouped[partenaire][produit][annee] = {};
+    if (!grouped[partenaire][produit][annee][mois]) grouped[partenaire][produit][annee][mois] = [];
+    grouped[partenaire][produit][annee][mois].push(contract);
+  });
+  return grouped;
+};
 
-  const toggleExpand = (key, setter) => {
-    setter(prev => ({ ...prev, [key]: !prev[key] }));
+const PdfTable = () => {
+  const [expanded, setExpanded] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const groupedData = getGroupedData(contratsData);
+
+  const toggleExpand = (key) => {
+    setExpanded({ ...expanded, [key]: !expanded[key] });
   };
 
-  const handleSelection = (contracts) => {
-    setSelectedContracts(contracts);
+  const selectFilter = (level, value) => {
+    setSelectedFilters({ ...selectedFilters, [level]: value });
   };
+
+  const filteredContracts = contratsData.filter((contract) => {
+    return (
+      (!selectedFilters.partenaire || contract.partenaire === selectedFilters.partenaire) &&
+      (!selectedFilters.produit || contract.produit === selectedFilters.produit) &&
+      (!selectedFilters.annee || contract.annee === selectedFilters.annee) &&
+      (!selectedFilters.mois || contract.mois === selectedFilters.mois)
+    );
+  });
 
   const exportPDF = () => {
     const doc = new jsPDF();
-    doc.text('Liste des Contrats', 20, 10);
+    doc.text("Liste des Contrats", 20, 10);
     doc.autoTable({
-      head: [['Partenaire', 'Produit', 'Année', 'Mois', 'Nombre de Contrats']],
-      body: selectedContracts.map(c => [c.partner, c.product, c.year, c.month, c.count])
+      head: [["Num Police", "Nom", "Prénom", "Date Naissance", "Date Effet", "Montant Assuré", "Opérateur", "Date Archivage"]],
+      body: filteredContracts.map((c) => [
+        c.numPolice,
+        c.nom,
+        c.prenom,
+        c.dateNaissance,
+        c.dateEffet,
+        c.montantAssure,
+        c.operateur,
+        c.dateArchivage,
+      ]),
     });
-    doc.save('contrats.pdf');
+    doc.save("contrats.pdf");
   };
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom align="center" style={{ color: '#006341' }}>
-        Gestion des Contrats
+      <Typography variant="h4" gutterBottom sx={{ color: BNP_DARK }}>
+        Liste des Contrats
       </Typography>
-
-      <Grid container spacing={2}>
-        {/* MENU LATERAL */}
-        <Grid item xs={3} style={styles.sidebar}>
-          <Typography variant="h6">Filtres</Typography>
+      <Box display="flex">
+        {/* 🎯 Sidebar */}
+        <Paper sx={{ width: 300, padding: 2, marginRight: 3, backgroundColor: "#f7f7f7" }}>
+          <Typography variant="h6" sx={{ color: BNP_GREEN }}>
+            Filtres
+          </Typography>
           <List>
-            {contractsData.map((partner, pIndex) => (
-              <div key={pIndex}>
-                <ListItemButton onClick={() => toggleExpand(partner.partner, setExpandedPartners)}>
-                  <ListItemText primary={`${partner.partner} (${partner.products.reduce((acc, p) => acc + Object.values(p.years).reduce((a, y) => a + Object.values(y.months).reduce((sum, m) => sum + m, 0), 0), 0)})`} />
-                  {expandedPartners[partner.partner] ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-                <Collapse in={expandedPartners[partner.partner]} timeout="auto" unmountOnExit>
+            {Object.keys(groupedData).map((partenaire) => (
+              <div key={partenaire}>
+                <ListItem button onClick={() => toggleExpand(partenaire)}>
+                  <ListItemText primary={`${partenaire} (${contratsData.filter(c => c.partenaire === partenaire).length})`} />
+                  {expanded[partenaire] ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={expanded[partenaire]} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
-                    {partner.products.map((product, prodIndex) => (
-                      <div key={prodIndex}>
-                        <ListItemButton onClick={() => toggleExpand(product.name, setExpandedProducts)} sx={{ pl: 2 }}>
-                          <ListItemText primary={`${product.name} (${Object.values(product.years).reduce((a, y) => a + Object.values(y.months).reduce((sum, m) => sum + m, 0), 0)})`} />
-                          {expandedProducts[product.name] ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton>
-                        <Collapse in={expandedProducts[product.name]} timeout="auto" unmountOnExit>
-                          <List component="div" disablePadding>
-                            {Object.entries(product.years).map(([year, yearData]) => (
-                              <div key={year}>
-                                <ListItemButton onClick={() => toggleExpand(year, setExpandedYears)} sx={{ pl: 4 }}>
-                                  <ListItemText primary={`${year} (${Object.values(yearData.months).reduce((sum, m) => sum + m, 0)})`} />
-                                  {expandedYears[year] ? <ExpandLess /> : <ExpandMore />}
-                                </ListItemButton>
-                                <Collapse in={expandedYears[year]} timeout="auto" unmountOnExit>
-                                  <List component="div" disablePadding>
-                                    {Object.entries(yearData.months).map(([month, count]) => (
-                                      <ListItemButton key={month} sx={{ pl: 6 }}
-                                        onClick={() => handleSelection([{ partner: partner.partner, product: product.name, year, month, count }])}>
-                                        <ListItemText primary={`${month} (${count})`} />
-                                      </ListItemButton>
-                                    ))}
-                                  </List>
-                                </Collapse>
-                              </div>
-                            ))}
-                          </List>
-                        </Collapse>
-                      </div>
+                    {Object.keys(groupedData[partenaire]).map((produit) => (
+                      <ListItem button key={produit} sx={{ pl: 4 }} onClick={() => selectFilter("produit", produit)}>
+                        <ListItemText primary={`${produit} (${contratsData.filter(c => c.produit === produit).length})`} />
+                      </ListItem>
                     ))}
                   </List>
                 </Collapse>
               </div>
             ))}
           </List>
-        </Grid>
+        </Paper>
 
-        {/* TABLEAU DE DROITE */}
-        <Grid item xs={9}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <TextField label="Rechercher un contrat" variant="outlined" size="small" />
-            <Box>
-              <IconButton onClick={exportPDF} style={{ color: '#006341' }}>
-                <PictureAsPdf />
+        {/* 📋 Tableau des contrats */}
+        <Box flexGrow={1}>
+          <Box display="flex" justifyContent="space-between" mb={2}>
+            <IconButton onClick={exportPDF} color="primary">
+              <PictureAsPdfIcon />
+            </IconButton>
+            <DownloadTableExcel filename="contrats_table" sheet="Contrats" currentTableRef={() => document.getElementById("contrats-table")}>
+              <IconButton color="primary">
+                <SaveAltIcon />
               </IconButton>
-              <DownloadTableExcel filename="contrats" sheet="contrats" currentTableRef={() => document.getElementById('contracts-table')}>
-                <IconButton style={{ color: '#006341' }}>
-                  <SaveAlt />
-                </IconButton>
-              </DownloadTableExcel>
-            </Box>
+            </DownloadTableExcel>
           </Box>
-
-          <Table id="contracts-table">
-            <TableHead>
-              <TableRow style={styles.tableHeader}>
-                <TableCell style={{ color: 'white' }}>Partenaire</TableCell>
-                <TableCell style={{ color: 'white' }}>Produit</TableCell>
-                <TableCell style={{ color: 'white' }}>Année</TableCell>
-                <TableCell style={{ color: 'white' }}>Mois</TableCell>
-                <TableCell style={{ color: 'white' }}>Nombre de Contrats</TableCell>
+          <Table id="contrats-table">
+            <TableHead sx={{ backgroundColor: BNP_GREEN }}>
+              <TableRow>
+                {["Num Police", "Nom", "Prénom", "Date Naissance", "Date Effet", "Montant Assuré", "Opérateur", "Date Archivage"].map((header) => (
+                  <TableCell key={header} sx={{ color: "white" }}>
+                    {header}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedContracts.map((c, index) => (
-                <TableRow key={index} style={styles.tableRow}>
-                  <TableCell>{c.partner}</TableCell>
-                  <TableCell>{c.product}</TableCell>
-                  <TableCell>{c.year}</TableCell>
-                  <TableCell>{c.month}</TableCell>
-                  <TableCell>{c.count}</TableCell>
+              {filteredContracts.map((contract, index) => (
+                <TableRow key={index}>
+                  {Object.values(contract).slice(4).map((val, i) => (
+                    <TableCell key={i}>{val}</TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
 
-export default ContractList;
+export default PdfTable;
