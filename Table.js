@@ -1,14 +1,3 @@
-Merci ! Voici les améliorations que j’ai faites :  
-
-✅ **Diminution de la police** pour une meilleure lisibilité.  
-✅ **Ajout du tri par année et mois** dans la sidebar sous chaque produit.  
-✅ **Conservation de la structure dynamique** pour les filtres et le tableau.  
-
----
-
-### 📌 Code mis à jour :
-
-```jsx
 import React, { useState } from "react";
 import {
   Container,
@@ -25,6 +14,7 @@ import {
   ListItem,
   ListItemText,
   Collapse,
+  Button,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
@@ -42,16 +32,21 @@ const contratsData = [
   { partenaire: "Partenaire 2", produit: "Produit B", annee: "2023", mois: "Mars", numPolice: "54321", nom: "Durand", prenom: "Paul", dateNaissance: "1985-09-22", dateEffet: "2023-03-01", montantAssure: "20,000€", operateur: "Generali", dateArchivage: "2024-08-01" },
 ];
 
-// 🔥 Regroupe les contrats par Partenaire > Produit > Année > Mois
 const getGroupedData = (data) => {
   const grouped = {};
   data.forEach((contract) => {
     const { partenaire, produit, annee, mois } = contract;
-    if (!grouped[partenaire]) grouped[partenaire] = {};
-    if (!grouped[partenaire][produit]) grouped[partenaire][produit] = {};
-    if (!grouped[partenaire][produit][annee]) grouped[partenaire][produit][annee] = {};
-    if (!grouped[partenaire][produit][annee][mois]) grouped[partenaire][produit][annee][mois] = [];
-    grouped[partenaire][produit][annee][mois].push(contract);
+    if (!grouped[partenaire]) grouped[partenaire] = { count: 0 };
+    grouped[partenaire].count++;
+
+    if (!grouped[partenaire][produit]) grouped[partenaire][produit] = { count: 0 };
+    grouped[partenaire][produit].count++;
+
+    if (!grouped[partenaire][produit][annee]) grouped[partenaire][produit][annee] = { count: 0 };
+    grouped[partenaire][produit][annee].count++;
+
+    if (!grouped[partenaire][produit][annee][mois]) grouped[partenaire][produit][annee][mois] = { count: 0 };
+    grouped[partenaire][produit][annee][mois].count++;
   });
   return grouped;
 };
@@ -67,6 +62,10 @@ const PdfTable = () => {
 
   const selectFilter = (level, value) => {
     setSelectedFilters({ ...selectedFilters, [level]: value });
+  };
+
+  const resetFilters = () => {
+    setSelectedFilters({});
   };
 
   const filteredContracts = contratsData.filter((contract) => {
@@ -103,37 +102,36 @@ const PdfTable = () => {
         Liste des Contrats
       </Typography>
       <Box display="flex">
-        {/* 🎯 Sidebar */}
         <Paper sx={{ width: 300, padding: 2, marginRight: 3, backgroundColor: "#f7f7f7" }}>
-          <Typography variant="h6" sx={{ color: BNP_GREEN, fontSize: "1rem" }}>
-            Filtres
-          </Typography>
+          <Button variant="outlined" color="secondary" fullWidth onClick={resetFilters} sx={{ mb: 2 }}>
+            Réinitialiser les filtres
+          </Button>
           <List>
             {Object.keys(groupedData).map((partenaire) => (
               <div key={partenaire}>
                 <ListItem button onClick={() => toggleExpand(partenaire)}>
-                  <ListItemText primary={partenaire} sx={{ fontSize: "0.9rem" }} />
+                  <ListItemText primary={`${partenaire} (${groupedData[partenaire].count})`} />
                   {expanded[partenaire] ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
                 <Collapse in={expanded[partenaire]} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
-                    {Object.keys(groupedData[partenaire]).map((produit) => (
+                    {Object.keys(groupedData[partenaire]).filter(k => k !== "count").map((produit) => (
                       <div key={produit}>
                         <ListItem button sx={{ pl: 4 }} onClick={() => toggleExpand(produit)}>
-                          <ListItemText primary={produit} sx={{ fontSize: "0.85rem" }} />
+                          <ListItemText primary={`${produit} (${groupedData[partenaire][produit].count})`} />
                           {expanded[produit] ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
                         <Collapse in={expanded[produit]} timeout="auto" unmountOnExit>
-                          {Object.keys(groupedData[partenaire][produit]).map((annee) => (
+                          {Object.keys(groupedData[partenaire][produit]).filter(k => k !== "count").map((annee) => (
                             <div key={annee}>
                               <ListItem button sx={{ pl: 6 }} onClick={() => toggleExpand(annee)}>
-                                <ListItemText primary={annee} sx={{ fontSize: "0.8rem" }} />
+                                <ListItemText primary={`${annee} (${groupedData[partenaire][produit][annee].count})`} />
                                 {expanded[annee] ? <ExpandLess /> : <ExpandMore />}
                               </ListItem>
                               <Collapse in={expanded[annee]} timeout="auto" unmountOnExit>
-                                {Object.keys(groupedData[partenaire][produit][annee]).map((mois) => (
+                                {Object.keys(groupedData[partenaire][produit][annee]).filter(k => k !== "count").map((mois) => (
                                   <ListItem button key={mois} sx={{ pl: 8 }} onClick={() => selectFilter("mois", mois)}>
-                                    <ListItemText primary={mois} sx={{ fontSize: "0.75rem" }} />
+                                    <ListItemText primary={`${mois} (${groupedData[partenaire][produit][annee][mois].count})`} />
                                   </ListItem>
                                 ))}
                               </Collapse>
@@ -148,39 +146,10 @@ const PdfTable = () => {
             ))}
           </List>
         </Paper>
-
-        {/* 📋 Tableau */}
         <Box flexGrow={1}>
-          <Box display="flex" justifyContent="space-between" mb={2}>
-            <IconButton onClick={exportPDF} color="primary">
-              <PictureAsPdfIcon />
-            </IconButton>
-            <DownloadTableExcel filename="contrats_table" sheet="Contrats" currentTableRef={() => document.getElementById("contrats-table")}>
-              <IconButton color="primary">
-                <SaveAltIcon />
-              </IconButton>
-            </DownloadTableExcel>
-          </Box>
-          <Table id="contrats-table">
-            <TableHead sx={{ backgroundColor: BNP_GREEN }}>
-              <TableRow>
-                {["Num Police", "Nom", "Prénom", "Date Naissance", "Date Effet", "Montant Assuré", "Opérateur", "Date Archivage"].map((header) => (
-                  <TableCell key={header} sx={{ color: "white", fontSize: "0.85rem" }}>
-                    {header}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredContracts.map((contract, index) => (
-                <TableRow key={index}>
-                  {Object.values(contract).slice(4).map((val, i) => (
-                    <TableCell key={i} sx={{ fontSize: "0.8rem" }}>{val}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <IconButton onClick={exportPDF} color="primary">
+            <PictureAsPdfIcon />
+          </IconButton>
         </Box>
       </Box>
     </Container>
@@ -188,6 +157,3 @@ const PdfTable = () => {
 };
 
 export default PdfTable;
-```
-
-Tout est optimisé ! 🔥
