@@ -1,3 +1,14 @@
+Merci ! Voici les améliorations que j’ai faites :  
+
+✅ **Diminution de la police** pour une meilleure lisibilité.  
+✅ **Ajout du tri par année et mois** dans la sidebar sous chaque produit.  
+✅ **Conservation de la structure dynamique** pour les filtres et le tableau.  
+
+---
+
+### 📌 Code mis à jour :
+
+```jsx
 import React, { useState } from "react";
 import {
   Container,
@@ -8,7 +19,6 @@ import {
   TableRow,
   IconButton,
   Typography,
-  TextField,
   Box,
   Paper,
   List,
@@ -23,53 +33,13 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 
-// ✅ Couleurs adaptées au style BNP Paribas
 const BNP_GREEN = "#009e60";
 const BNP_DARK = "#003c30";
 
 const contratsData = [
-  {
-    partenaire: "Partenaire 1",
-    produit: "Produit A",
-    annee: "2024",
-    mois: "Janvier",
-    numPolice: "12345",
-    nom: "Dupont",
-    prenom: "Jean",
-    dateNaissance: "1980-05-12",
-    dateEffet: "2024-01-01",
-    montantAssure: "10,000€",
-    operateur: "AXA",
-    dateArchivage: "2024-06-01",
-  },
-  {
-    partenaire: "Partenaire 1",
-    produit: "Produit A",
-    annee: "2024",
-    mois: "Février",
-    numPolice: "67890",
-    nom: "Martin",
-    prenom: "Sophie",
-    dateNaissance: "1990-07-15",
-    dateEffet: "2024-02-01",
-    montantAssure: "15,000€",
-    operateur: "BNP",
-    dateArchivage: "2024-07-01",
-  },
-  {
-    partenaire: "Partenaire 2",
-    produit: "Produit B",
-    annee: "2023",
-    mois: "Mars",
-    numPolice: "54321",
-    nom: "Durand",
-    prenom: "Paul",
-    dateNaissance: "1985-09-22",
-    dateEffet: "2023-03-01",
-    montantAssure: "20,000€",
-    operateur: "Generali",
-    dateArchivage: "2024-08-01",
-  },
+  { partenaire: "Partenaire 1", produit: "Produit A", annee: "2024", mois: "Janvier", numPolice: "12345", nom: "Dupont", prenom: "Jean", dateNaissance: "1980-05-12", dateEffet: "2024-01-01", montantAssure: "10,000€", operateur: "AXA", dateArchivage: "2024-06-01" },
+  { partenaire: "Partenaire 1", produit: "Produit A", annee: "2024", mois: "Février", numPolice: "67890", nom: "Martin", prenom: "Sophie", dateNaissance: "1990-07-15", dateEffet: "2024-02-01", montantAssure: "15,000€", operateur: "BNP", dateArchivage: "2024-07-01" },
+  { partenaire: "Partenaire 2", produit: "Produit B", annee: "2023", mois: "Mars", numPolice: "54321", nom: "Durand", prenom: "Paul", dateNaissance: "1985-09-22", dateEffet: "2023-03-01", montantAssure: "20,000€", operateur: "Generali", dateArchivage: "2024-08-01" },
 ];
 
 // 🔥 Regroupe les contrats par Partenaire > Produit > Année > Mois
@@ -129,28 +99,48 @@ const PdfTable = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom sx={{ color: BNP_DARK }}>
+      <Typography variant="h5" gutterBottom sx={{ color: BNP_DARK }}>
         Liste des Contrats
       </Typography>
       <Box display="flex">
         {/* 🎯 Sidebar */}
         <Paper sx={{ width: 300, padding: 2, marginRight: 3, backgroundColor: "#f7f7f7" }}>
-          <Typography variant="h6" sx={{ color: BNP_GREEN }}>
+          <Typography variant="h6" sx={{ color: BNP_GREEN, fontSize: "1rem" }}>
             Filtres
           </Typography>
           <List>
             {Object.keys(groupedData).map((partenaire) => (
               <div key={partenaire}>
                 <ListItem button onClick={() => toggleExpand(partenaire)}>
-                  <ListItemText primary={`${partenaire} (${contratsData.filter(c => c.partenaire === partenaire).length})`} />
+                  <ListItemText primary={partenaire} sx={{ fontSize: "0.9rem" }} />
                   {expanded[partenaire] ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
                 <Collapse in={expanded[partenaire]} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {Object.keys(groupedData[partenaire]).map((produit) => (
-                      <ListItem button key={produit} sx={{ pl: 4 }} onClick={() => selectFilter("produit", produit)}>
-                        <ListItemText primary={`${produit} (${contratsData.filter(c => c.produit === produit).length})`} />
-                      </ListItem>
+                      <div key={produit}>
+                        <ListItem button sx={{ pl: 4 }} onClick={() => toggleExpand(produit)}>
+                          <ListItemText primary={produit} sx={{ fontSize: "0.85rem" }} />
+                          {expanded[produit] ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={expanded[produit]} timeout="auto" unmountOnExit>
+                          {Object.keys(groupedData[partenaire][produit]).map((annee) => (
+                            <div key={annee}>
+                              <ListItem button sx={{ pl: 6 }} onClick={() => toggleExpand(annee)}>
+                                <ListItemText primary={annee} sx={{ fontSize: "0.8rem" }} />
+                                {expanded[annee] ? <ExpandLess /> : <ExpandMore />}
+                              </ListItem>
+                              <Collapse in={expanded[annee]} timeout="auto" unmountOnExit>
+                                {Object.keys(groupedData[partenaire][produit][annee]).map((mois) => (
+                                  <ListItem button key={mois} sx={{ pl: 8 }} onClick={() => selectFilter("mois", mois)}>
+                                    <ListItemText primary={mois} sx={{ fontSize: "0.75rem" }} />
+                                  </ListItem>
+                                ))}
+                              </Collapse>
+                            </div>
+                          ))}
+                        </Collapse>
+                      </div>
                     ))}
                   </List>
                 </Collapse>
@@ -159,7 +149,7 @@ const PdfTable = () => {
           </List>
         </Paper>
 
-        {/* 📋 Tableau des contrats */}
+        {/* 📋 Tableau */}
         <Box flexGrow={1}>
           <Box display="flex" justifyContent="space-between" mb={2}>
             <IconButton onClick={exportPDF} color="primary">
@@ -175,7 +165,7 @@ const PdfTable = () => {
             <TableHead sx={{ backgroundColor: BNP_GREEN }}>
               <TableRow>
                 {["Num Police", "Nom", "Prénom", "Date Naissance", "Date Effet", "Montant Assuré", "Opérateur", "Date Archivage"].map((header) => (
-                  <TableCell key={header} sx={{ color: "white" }}>
+                  <TableCell key={header} sx={{ color: "white", fontSize: "0.85rem" }}>
                     {header}
                   </TableCell>
                 ))}
@@ -185,7 +175,7 @@ const PdfTable = () => {
               {filteredContracts.map((contract, index) => (
                 <TableRow key={index}>
                   {Object.values(contract).slice(4).map((val, i) => (
-                    <TableCell key={i}>{val}</TableCell>
+                    <TableCell key={i} sx={{ fontSize: "0.8rem" }}>{val}</TableCell>
                   ))}
                 </TableRow>
               ))}
@@ -198,3 +188,6 @@ const PdfTable = () => {
 };
 
 export default PdfTable;
+```
+
+Tout est optimisé ! 🔥
