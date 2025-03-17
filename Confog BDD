@@ -1,0 +1,98 @@
+Dans Spring Boot, lorsque vous avez deux bases de données configurées (primaire et secondaire), vous devez utiliser l'annotation `@Table` avec `schema` ou configurer explicitement la `DataSource` associée. Cependant, Spring Data JPA ne permet pas de spécifier directement la base de données dans l'entité.  
+
+### **Solution 1 : Définir un `EntityManager` spécifique pour la base secondaire**  
+
+1. **Configurer les sources de données dans `application.properties`**  
+   ```properties
+   # Base de données primaire
+   spring.datasource.primary.url=jdbc:oracle:thin:@//primary-db-host:1521/primarydb
+   spring.datasource.primary.username=primary_user
+   spring.datasource.primary.password=primary_password
+   spring.datasource.primary.driver-class-name=oracle.jdbc.OracleDriver
+   spring.datasource.primary.jpa.database-platform=org.hibernate.dialect.Oracle12cDialect
+
+   # Base de données secondaire
+   spring.datasource.secondary.url=jdbc:oracle:thin:@//secondary-db-host:1521/secondarydb
+   spring.datasource.secondary.username=secondary_user
+   spring.datasource.secondary.password=secondary_password
+   spring.datasource.secondary.driver-class-name=oracle.jdbc.OracleDriver
+   spring.datasource.secondary.jpa.database-platform=org.hibernate.dialect.Oracle12cDialect
+   ```
+
+2. **Créer une configuration pour la base secondaire (`SecondaryDatabaseConfig.java`)**  
+   ```java
+   @Configuration
+   @EnableTransactionManagement
+   @EnableJpaRepositories(
+       basePackages = "com.example.repository.secondary",
+       entityManagerFactoryRef = "secondaryEntityManagerFactory",
+       transactionManagerRef = "secondaryTransactionManager"
+   )
+   public class SecondaryDatabaseConfig {
+
+       @Primary
+       @Bean(name = "secondaryDataSource")
+       @ConfigurationProperties(prefix = "spring.datasource.secondary")
+       public DataSource dataSource() {
+           return DataSourceBuilder.create().build();
+       }
+
+       @Bean(name = "secondaryEntityManagerFactory")
+       public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+               EntityManagerFactoryBuilder builder,
+               @Qualifier("secondaryDataSource") DataSource dataSource) {
+           return builder
+               .dataSource(dataSource)
+               .packages("com.example.model.secondary")  // Définir le package des entités
+               .persistenceUnit("secondary")
+               .build();
+       }
+
+       @Bean(name = "secondaryTransactionManager")
+       public PlatformTransactionManager transactionManager(
+               @Qualifier("secondaryEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+           return new JpaTransactionManager(entityManagerFactory);
+       }
+   }
+   ```
+
+3. **Créer l'entité en la plaçant dans le package `com.example.model.secondary`**  
+   ```java
+   @Entity
+   @Table(name = "Archivage", schema = "SECONDARY_SCHEMA") // Définir le bon schéma si nécessaire
+   public class Archivage {
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private String id;
+
+       private String numPolice;
+       private String nom;
+       private String prenom;
+       private String annee;
+       private String mois;
+       private BigDecimal montantAssure;
+       private BigDecimal montantPrime;
+
+       @Lob
+       private byte[] contrat;
+       
+       // Getters et Setters
+   }
+   ```
+
+4. **Créer le Repository correspondant et l'annoter avec `@Repository`**  
+   ```java
+   @Repository
+   @Transactional(transactionManager = "secondaryTransactionManager")
+   public interface ArchivageRepository extends JpaRepository<Archivage, String> {
+       boolean existsByNumPoliceAndNomAndPrenom(String numPolice, String nom, String prenom);
+   }
+   ```
+
+### **Explication**
+- On utilise deux `EntityManagerFactory` et `TransactionManager`, un pour chaque base.
+- Les entités doivent être dans des packages distincts pour éviter toute confusion.
+- Les repositories doivent être assignés à leur `TransactionManager` respectif.
+- Dans l'entité, on peut utiliser `@Table(schema = "SECONDARY_SCHEMA")` si la base secondaire utilise un schéma différent.
+
+Cette approche garantit que les opérations `JPA` sur la base secondaire passent par le bon `EntityManager`.
