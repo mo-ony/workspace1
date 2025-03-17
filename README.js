@@ -1,4 +1,44 @@
 
+const handleSubmit = async () => {
+  try {
+    const base64Files = await Promise.all(files.map(async (file) => {
+      const base64DataURL = await blobToDataURL(file);
+      if (!base64DataURL) return null;
+
+      return {
+        partenaire: partner,
+        produit: product,
+        annee: year,
+        mois: month,
+        filename: file.name,
+        mimeType: file.type,
+        blob: base64DataURL, // Base64 Data URL
+        numContrat,
+        ...metadata
+      };
+    }));
+
+    const validFiles = base64Files.filter(file => file !== null);
+
+    if (validFiles.length === 0) {
+      console.error("No valid files to submit.");
+      return;
+    }
+
+    await axios.post('/api/save', validFiles, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    alert('Data submitted successfully');
+  } catch (error) {
+    console.error('Error submitting data:', error);
+  }
+};
+
+
+
+
+
 La semaine dernière, on a implémenté le design de l'interface d'authentification et avancé sur l'interface d’indexation. Pour cette semaine, l’objectif est de travailler sur la deuxième interface, qui concerne l’habillage de la base de données, à l’exception de la fonctionnalité de recherche, qui sera implémentée la semaine prochaine.  
 
 En parallèle, la semaine dernière, on avait proposé une approche pour les deux scénarios *(expliquer brièvement les deux scénarios)*. Si vous validez cette approche, on pourra commencer à l’implémenter dès cette semaine.  
