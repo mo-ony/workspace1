@@ -23,3 +23,43 @@ const Header = ({ onLogout }) => (
 );
 
 export default Header;
+----------------
+
+
+
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import logo from '../../logo.svg'; // Adjust the path if needed
+
+const Header = ({ onLogout }) => {
+  const navigate = useNavigate();
+
+  return (
+    <AppBar position="static" style={{ backgroundColor: 'white', color: 'black' }}>
+      <Toolbar>
+        {/* Logo */}
+        <img src={logo} alt="Brand Logo" style={{ height: 40, marginRight: 10 }} />
+
+        {/* Left-aligned Title */}
+        <Typography variant="h6" style={{ flexGrow: 1 }}>
+          Admin Panel
+        </Typography>
+
+        {/* Centered Navigation Buttons */}
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Button color="inherit" onClick={() => navigate('/dashboard')}>Dashboard</Button>
+          <Button color="inherit" onClick={() => navigate('/settings')}>Settings</Button>
+          <Button color="inherit" onClick={() => navigate('/reports')}>Reports</Button>
+        </Box>
+
+        {/* Logout Button */}
+        <Button color="inherit" onClick={onLogout}>
+          Logout
+        </Button>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default Header;
