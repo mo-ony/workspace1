@@ -1,4 +1,121 @@
-            <TableRow key={contract.numPolice}>
+Here’s how you can implement this:  
+
+### ✅ Steps:
+1. **Show a popup/modal when clicking "View"**
+2. **Fetch the PDF (Base64) using `axios` when the popup opens**
+3. **Show a loading indicator while fetching the PDF**
+4. **Display the PDF once the request is complete**  
+
+---
+
+### **🚀 Updated Code**
+```jsx
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  CircularProgress,
+  IconButton,
+  Button,
+} from "@mui/material";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+
+const PdfViewerPopup = ({ open, onClose, pdfBase64 }) => {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>PDF Preview</DialogTitle>
+      <DialogContent>
+        {pdfBase64 ? (
+          <iframe
+            src={`data:application/pdf;base64,${pdfBase64}`}
+            width="100%"
+            height="500px"
+            title="PDF Document"
+          />
+        ) : (
+          <CircularProgress />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const PdfTable = () => {
+  const [open, setOpen] = useState(false);
+  const [pdfBase64, setPdfBase64] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchPdf = async () => {
+    setLoading(true);
+    setPdfBase64(null);
+
+    try {
+      const response = await axios.get("/api/get-pdf", {
+        responseType: "json", // The API should return a JSON with { pdf: "BASE64_STRING" }
+      });
+      setPdfBase64(response.data.pdf);
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+    fetchPdf();
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setPdfBase64(null);
+  };
+
+  return (
+    <div>
+      <Button variant="contained" color="primary" onClick={handleOpen}>
+        View PDF
+      </Button>
+
+      <PdfViewerPopup open={open} onClose={handleClose} pdfBase64={pdfBase64} />
+
+      {loading && <CircularProgress />}
+    </div>
+  );
+};
+
+export default PdfTable;
+```
+
+---
+
+### **🎯 Key Features**
+✅ Click **"View PDF"** → Opens a popup  
+✅ **Axios request** fetches PDF in **Base64 format**  
+✅ **Loading spinner** appears while fetching  
+✅ **PDF is displayed** in an `<iframe>` once loaded  
+
+---
+
+### **🚀 Next Steps**
+- Replace `"/api/get-pdf"` with your real endpoint.  
+- Ensure the API returns a JSON like `{ "pdf": "BASE64_STRING" }`.  
+
+Let me know if you need any modifications! 🚀🔥
+
+
+
+
+
+
+
+
+
+
+
+<TableRow key={contract.numPolice}>
               <TableCell>{contract.numPolice}</TableCell>
               <TableCell>{contract.nom}</TableCell>
               <TableCell>{contract.prenom}</TableCell>
