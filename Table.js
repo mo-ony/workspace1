@@ -1,3 +1,13 @@
+            <TableRow key={contract.numPolice}>
+              <TableCell>{contract.numPolice}</TableCell>
+              <TableCell>{contract.nom}</TableCell>
+              <TableCell>{contract.prenom}</TableCell>
+              <TableCell>{contract.dateNaissance}</TableCell>
+              <TableCell>{contract.dateEffet}</TableCell>
+              <TableCell>{contract.montantAssure}</TableCell>
+              <TableCell>{contract.operateur}</TableCell>
+              <TableCell>{contract.dateArchivage}</TableCell>
+
 D'accord ! Voici comment **ajouter les icônes** et **gérer les actions** avec des popups de confirmation pour la mise à jour et la suppression, ainsi qu'un **popup détaillé** pour visualiser le contrat.  
 
 ---
