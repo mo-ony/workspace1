@@ -1,0 +1,9 @@
+**Sprint Demo 2 - Présentation**  
+
+Cette semaine, nous avons travaillé sur la deuxième interface de l’habillage de la base de données, à l’exception de la fonctionnalité d’archivage.  
+
+Nous avons également commencé à implémenter l’approche proposée pour les contrats inexistants sur ODS. L’idée est d’indexer ces contrats sans métadonnées, avec un flag, et de permettre leur mise à jour dans la deuxième page lorsque les métadonnées deviennent disponibles.  
+
+Il reste encore à finaliser la récupération des métadonnées côté backend, ainsi que l’affichage du nombre de contrats par filtre et la pagination.  
+
+Si vous n’avez pas de questions, on peut passer à la démonstration.
