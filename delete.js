@@ -5,7 +5,6 @@ Voici comment implémenter la suppression d'un contrat et l'enregistrement des s
 ## **✅ 1. Ajouter l'Entité `DeleteArchiveLog`**
 On crée une entité pour suivre les suppressions.
 
-```java
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
