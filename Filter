@@ -1,0 +1,252 @@
+
+Oui, on peut utiliser les **Tabs** de `@mui/material` et appliquer la couleur **BNP Paribas Green** (`#009966`). Voici comment faire :  
+
+---
+
+### **1️⃣ Installer MUI si ce n’est pas encore fait**
+```sh
+npm install @mui/material @emotion/react @emotion/styled
+```
+
+---
+
+### **2️⃣ Utiliser `Tabs` de MUI avec BNP Paribas Green**
+Voici un exemple avec les trois onglets et la gestion du filtrage :
+
+```javascript
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Box, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from "@mui/material";
+
+const BNP_GREEN = "#009966"; // BNP Paribas Green
+
+const ContractsPage = () => {
+  const [contracts, setContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tabIndex, setTabIndex] = useState(0);
+
+  useEffect(() => {
+    axios.get("/api/contracts")
+      .then(response => {
+        setContracts(response.data);
+        setFilteredContracts(response.data);
+      })
+      .catch(error => console.error("Erreur de chargement :", error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Gérer le changement d'onglet et filtrer les contrats
+  const handleTabChange = (event, newIndex) => {
+    setTabIndex(newIndex);
+    if (newIndex === 0) setFilteredContracts(contracts);
+    else if (newIndex === 1) setFilteredContracts(contracts.filter(c => c.flag === 0));
+    else if (newIndex === 2) setFilteredContracts(contracts.filter(c => c.flag === 1));
+  };
+
+  return (
+    <Box sx={{ width: "100%", p: 2 }}>
+      {/* Onglets */}
+      <Tabs 
+        value={tabIndex} 
+        onChange={handleTabChange} 
+        textColor="inherit" 
+        TabIndicatorProps={{ style: { backgroundColor: BNP_GREEN } }}
+        sx={{
+          "& .MuiTab-root": { color: BNP_GREEN },
+          "& .Mui-selected": { fontWeight: "bold" }
+        }}
+      >
+        <Tab label="Tous les contrats" />
+        <Tab label="Contrats indexés" />
+        <Tab label="Contrats sous réserve" />
+      </Tabs>
+
+      {/* Loader */}
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress sx={{ color: BNP_GREEN }} />
+        </Box>
+      ) : (
+        <TableContainer sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Numéro Police</strong></TableCell>
+                <TableCell><strong>Statut</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredContracts.map((contract) => (
+                <TableRow key={contract.id}>
+                  <TableCell>{contract.numPolice}</TableCell>
+                  <TableCell>{contract.flag === 1 ? "Sous réserve" : "Indexé"}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
+  );
+};
+
+export default ContractsPage;
+```
+
+---
+
+### **🎨 Résumé des améliorations**
+✅ **MUI Tabs avec BNP Paribas Green (`#009966`)**  
+✅ **Filtrage des contrats par catégorie**  
+✅ **Ajout d'un **loader** (`CircularProgress`) en attendant les données**  
+✅ **UI moderne et responsive**  
+
+---
+
+💡 **Tu peux tester et ajuster le design !** 🎯
+
+
+
+
+
+
+
+'accord, voici comment structurer ton backend et frontend pour gérer ces trois types de contrats :
+
+---
+
+## **✅ 1. Mise à jour du Backend**
+Ajout d'une colonne `flag` dans la table `contracts` :
+
+### **🔹 Modifier l'Entité `Contract`**
+Ajoute une colonne `flag` (0 = normal, 1 = sous réserve).
+
+```java
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity
+@Data
+@Table(name = "contracts")
+public class Contract {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "num_police", nullable = false, unique = true)
+    private String numPolice;
+
+    @Column(name = "flag", nullable = false, columnDefinition = "TINYINT DEFAULT 0")
+    private int flag; // 0 = normal, 1 = sous réserve (manque de métadonnées)
+}
+```
+
+### **🔹 SQL pour ajouter la colonne `flag`**
+Si la colonne n'existe pas encore :
+
+```sql
+ALTER TABLE contracts ADD COLUMN flag TINYINT DEFAULT 0;
+```
+
+---
+
+## **✅ 2. Modifier le Frontend**
+Ajoute trois onglets :
+- **Tous les contrats**
+- **Contrats indexés** (flag = 0)
+- **Contrats sous réserve** (flag = 1)
+
+### **🔹 Composant React avec les Onglets et Filtrage**
+```javascript
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Tabs, Table } from "antd";
+
+const ContractsPage = () => {
+  const [contracts, setContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
+
+  useEffect(() => {
+    axios.get("/api/contracts")
+      .then(response => {
+        setContracts(response.data);
+        setFilteredContracts(response.data); // Afficher tout par défaut
+      })
+      .catch(error => console.error("Erreur lors du chargement :", error));
+  }, []);
+
+  // Gérer le changement d'onglet et filtrer
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    if (key === "all") {
+      setFilteredContracts(contracts);
+    } else if (key === "indexed") {
+      setFilteredContracts(contracts.filter(c => c.flag === 0));
+    } else if (key === "flagged") {
+      setFilteredContracts(contracts.filter(c => c.flag === 1));
+    }
+  };
+
+  // Colonnes du tableau
+  const columns = [
+    { title: "Numéro Police", dataIndex: "numPolice", key: "numPolice" },
+    { title: "Statut", dataIndex: "flag", key: "flag",
+      render: (flag) => flag === 1 ? "Sous réserve" : "Indexé" }
+  ];
+
+  return (
+    <div>
+      <Tabs activeKey={activeTab} onChange={handleTabChange}>
+        <Tabs.TabPane tab="Tous les contrats" key="all" />
+        <Tabs.TabPane tab="Contrats indexés" key="indexed" />
+        <Tabs.TabPane tab="Contrats sous réserve" key="flagged" />
+      </Tabs>
+      
+      <Table columns={columns} dataSource={filteredContracts} rowKey="id" />
+    </div>
+  );
+};
+
+export default ContractsPage;
+```
+
+---
+
+## **✅ 3. Ajouter un Endpoint pour Récupérer les Contrats**
+Si le tri se fait côté frontend, un simple `GET` suffira.
+
+```java
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/contracts")
+public class ContractController {
+
+    private final ContractRepository contractRepository;
+
+    public ContractController(ContractRepository contractRepository) {
+        this.contractRepository = contractRepository;
+    }
+
+    @GetMapping
+    public List<Contract> getAllContracts() {
+        return contractRepository.findAll();
+    }
+}
+```
+
+---
+
+## **🎯 Résumé**
+1. **Ajout d'une colonne `flag`** en base de données pour différencier les contrats.
+2. **Modification de l'entité `Contract`** pour inclure `flag`.
+3. **Création d'un composant React** avec 3 onglets et un filtrage dynamique.
+4. **Ajout d'un endpoint backend** pour récupérer tous les contrats.
+
+---
+
+🚀 **Tout est prêt !** Tu peux maintenant gérer tes contrats avec des onglets dynamiques.
