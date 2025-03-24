@@ -1,4 +1,126 @@
 
+Voici une version modifiée de ta page pour la première connexion où l'utilisateur doit définir son mot de passe et le confirmer.  
+
+- Elle inclut des critères de validation (au moins 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial).  
+- Lorsqu'un critère est rempli, il devient grisé.  
+- Le bouton de validation est désactivé tant que les conditions ne sont pas remplies.  
+
+### Code :
+
+```jsx
+import React, { useState } from "react";
+import { Container, Card, CardContent, TextField, Button, Typography, Box, List, ListItem } from "@mui/material";
+import { styled } from "@mui/system";
+
+const StyledCard = styled(Card)({
+  maxWidth: 400,
+  margin: "auto",
+  marginTop: "100px",
+  padding: "20px",
+});
+
+const StyledButton = styled(Button)({
+  marginTop: "20px",
+});
+
+const PasswordSetup = ({ onSubmit }) => {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const passwordCriteria = [
+    { label: "Au moins 8 caractères", regex: /.{8,}/ },
+    { label: "Au moins une majuscule", regex: /[A-Z]/ },
+    { label: "Au moins un chiffre", regex: /\d/ },
+    { label: "Au moins un caractère spécial", regex: /[\W_]/ },
+  ];
+
+  const validatePassword = (password) => {
+    return passwordCriteria.every((criterion) => criterion.regex.test(password));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    setError("");
+    onSubmit(password); // Envoi du mot de passe validé
+  };
+
+  return (
+    <Container>
+      <StyledCard>
+        <CardContent>
+          <Typography variant="h5" gutterBottom align="center">
+            Définir un mot de passe
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Nouveau mot de passe"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              label="Confirmer le mot de passe"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={!!error}
+              helperText={error}
+            />
+            <Box mt={2}>
+              <Typography variant="subtitle1">Le mot de passe doit contenir :</Typography>
+              <List>
+                {passwordCriteria.map((criterion, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{ color: criterion.regex.test(password) ? "gray" : "black" }}
+                  >
+                    {criterion.label}
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+            <StyledButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={!validatePassword(password)}
+            >
+              Valider
+            </StyledButton>
+          </form>
+        </CardContent>
+      </StyledCard>
+    </Container>
+  );
+};
+
+export default PasswordSetup;
+```
+
+### Fonctionnalités :  
+✅ Validation des critères de mot de passe en temps réel  
+✅ Désactivation du bouton tant que les critères ne sont pas remplis  
+✅ Vérification de la correspondance entre les deux mots de passe  
+✅ Affichage des critères validés en gris  
+
+Dis-moi si tu veux personnaliser d'autres aspects !
+
+
+
+
+
 Merci pour cette initiative. Comme je n'ai pas encore beaucoup d'expérience en équipe, voici mes commentaires sur quelques points :
 
 L'environnement de travail est parfois trop bruyant, ce qui peut nuire aux problèmes développés et à la concentration.
