@@ -1,3 +1,117 @@
+import React, { useState } from "react";
+import { Container, Card, CardContent, TextField, Button, Typography, Box, List, ListItem } from "@mui/material";
+import { styled } from "@mui/system";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+const StyledCard = styled(Card)({
+  maxWidth: 400,
+  margin: "auto",
+  marginTop: "100px",
+  padding: "20px",
+});
+
+const StyledButton = styled(Button)({
+  marginTop: "20px",
+});
+
+const StyledListItem = styled(ListItem)({
+  fontSize: "14px", // Police plus petite
+});
+
+const PasswordSetup = ({ onSubmit }) => {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const passwordCriteria = [
+    { label: "Au moins 8 caractères", regex: /.{8,}/ },
+    { label: "Au moins une majuscule", regex: /[A-Z]/ },
+    { label: "Au moins un chiffre", regex: /\d/ },
+    { label: "Au moins un caractère spécial", regex: /[\W_]/ },
+  ];
+
+  const validatePassword = (password) => {
+    return passwordCriteria.every((criterion) => criterion.regex.test(password));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    setError("");
+    onSubmit(password); // Envoi du mot de passe validé
+  };
+
+  return (
+    <Container>
+      <StyledCard>
+        <CardContent>
+          <Typography variant="h5" gutterBottom align="center">
+            Définir un mot de passe
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Nouveau mot de passe"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              label="Confirmer le mot de passe"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={!!error}
+              helperText={error}
+            />
+            <Box mt={2}>
+              <Typography variant="subtitle2">Le mot de passe doit contenir :</Typography>
+              <List>
+                {passwordCriteria.map((criterion, index) => {
+                  const isValid = criterion.regex.test(password);
+                  return (
+                    <StyledListItem key={index} sx={{ color: isValid ? "green" : "red" }}>
+                      {isValid ? <CheckCircleIcon fontSize="small" color="success" /> : <CancelIcon fontSize="small" color="error" />}
+                      &nbsp; {criterion.label}
+                    </StyledListItem>
+                  );
+                })}
+              </List>
+            </Box>
+            <StyledButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={!validatePassword(password)}
+            >
+              Valider
+            </StyledButton>
+          </form>
+        </CardContent>
+      </StyledCard>
+    </Container>
+  );
+};
+
+export default PasswordSetup;
+
+
+
+
+
+
+
+
 
 Voici une version modifiée de ta page pour la première connexion où l'utilisateur doit définir son mot de passe et le confirmer.  
 
