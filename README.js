@@ -1,4 +1,19 @@
 
+Merci pour cette initiative. Comme je n'ai pas encore beaucoup d'expérience en équipe, voici mes commentaires sur quelques points :
+
+L'environnement de travail est parfois trop bruyant, ce qui peut nuire aux problèmes développés et à la concentration.
+
+Travailler sur plusieurs projets simultanément ne peut pas être aussi productif que prévu, car le passage d'un sujet à l'autre nécessite du temps pour se replonger dans le sujet.
+
+Pour estimer les efforts, impliquer les développeurs dans l'évaluation des tâches permettrait de mieux cadrer ce qui pourrait être fait dans le projet dans le délai imparti.
+
+J'ai hâte d'en discuter davantage avec vous.
+
+Bonne journée,
+
+
+
+
 const handleSubmit = async () => {
   try {
     const base64Files = await Promise.all(files.map(async (file) => {
