@@ -1,3 +1,19 @@
+
+Bonjour [Nom du RH],
+
+Je vous prie de bien vouloir trouver en pièce jointe les justificatifs pour le remboursement de mes frais de transport liés à l’Oftar du 24 mars.
+
+Merci d’avance pour votre retour.
+
+Cordialement,
+[Votre Nom]
+
+
+
+
+
+
+
 import React, { useState } from "react";
 import { Container, Card, CardContent, TextField, Button, Typography, Box, List, ListItem } from "@mui/material";
 import { styled } from "@mui/system";
