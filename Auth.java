@@ -1,3 +1,127 @@
+If you're using **`io.jsonwebtoken` version 0.12.6**, the API has changed slightly. Here’s how to fix the issues:
+
+---
+
+### **1️⃣ Fix `import io.jsonwebtoken.*;`**
+In **version 0.12.6**, the API uses **`Jwts.SIG.HS256`** instead of `SignatureAlgorithm.HS256`. Update your JWT generation code:
+
+#### ✅ **Fixed JWT Generation Code**
+```java
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import javax.crypto.SecretKey;
+
+public class JwtUtil {
+    private static final String SECRET = "your-very-secure-secret-key-should-be-32-characters";
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+
+    public static String generateToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 10 minutes
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
+    public static boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
+```
+**Changes made for `0.12.6` compatibility:**
+- Replaced `SignatureAlgorithm.HS256` with `Keys.hmacShaKeyFor()`
+- Used `Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token)`
+
+---
+
+### **2️⃣ Fix `import org.springframework.security.crypto.password.PasswordEncoder;`**
+If **`PasswordEncoder`** is not found, make sure you have added **Spring Security** to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-crypto</artifactId>
+    <version>6.2.1</version>
+</dependency>
+```
+
+Then, import it in your Java file:
+```java
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+```
+
+And create a **password encoder bean**:
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+Now, inject it into your **AuthService**:
+```java
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public String login(String username, String password) throws Exception {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("Utilisateur non trouvé."));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new Exception("Mot de passe incorrect.");
+        }
+
+        return JwtUtil.generateToken(username);
+    }
+}
+```
+
+---
+
+### **✅ Summary of Fixes**
+- ✅ **JWT Fix** → Updated to work with **`io.jsonwebtoken 0.12.6`**
+- ✅ **PasswordEncoder Fix** → Added `spring-security-crypto` dependency and `SecurityConfig` bean
+
+Now your authentication should work! 🚀 Let me know if you have any more issues.
+
+
+----------------------
+
+
+
+
+
+
 Voici une solution complète d'authentification avec **Spring Boot** pour le backend et **React.js** pour le frontend.  
 
 ### **Fonctionnalités :**  
