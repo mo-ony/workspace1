@@ -1,4 +1,69 @@
 
+
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/toolbar/lib/styles/index.css";
+import { Grid, Paper, Box, IconButton, Typography, Stack } from "@mui/material";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+
+const PdfViewer = ({ selectedPdf }) => {
+  const toolbarPluginInstance = toolbarPlugin();
+  const { ZoomInButton, ZoomOutButton, ZoomPopover } = toolbarPluginInstance;
+
+  return (
+    <Grid item xs={8}>
+      <Paper sx={{ height: "100%", padding: "20px", display: "flex", flexDirection: "column" }}>
+        {selectedPdf ? (
+          <>
+            {/* Toolbar Zoom */}
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent="center"
+              sx={{ p: 1, bgcolor: "#f3f3f3", borderRadius: 1 }}
+            >
+              <ZoomOutButton>
+                {(props) => (
+                  <IconButton onClick={props.onClick}>
+                    <ZoomOutIcon />
+                  </IconButton>
+                )}
+              </ZoomOutButton>
+
+              <ZoomPopover />
+
+              <ZoomInButton>
+                {(props) => (
+                  <IconButton onClick={props.onClick}>
+                    <ZoomInIcon />
+                  </IconButton>
+                )}
+              </ZoomInButton>
+            </Stack>
+
+            {/* PDF Viewer */}
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+              <Box sx={{ flex: 1, overflowY: "auto" }}>
+                <Viewer fileUrl={selectedPdf} plugins={[toolbarPluginInstance]} />
+              </Box>
+            </Worker>
+          </>
+        ) : (
+          <Typography variant="body1">No PDF selected</Typography>
+        )}
+      </Paper>
+    </Grid>
+  );
+};
+
+export default PdfViewer;
+
+
+
+
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
 import "@react-pdf-viewer/core/lib/styles/index.css";
