@@ -1,3 +1,46 @@
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/toolbar/lib/styles/index.css";
+import { Grid, Paper, Box, IconButton, Typography, Stack } from "@mui/material";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+import { useRef } from "react";
+
+const PdfViewer = ({ selectedPdf }) => {
+  // Référence pour manipuler le zoom
+  const viewerRef = useRef(null);
+
+  // Initialisation du plugin toolbar
+  const toolbarPluginInstance = toolbarPlugin();
+  const { ZoomIn, ZoomOut } = toolbarPluginInstance;
+
+  return (
+    <Grid item xs={8}>
+      <Paper sx={{ height: "100%", padding: "20px", display: "flex", flexDirection: "column" }}>
+        {/* Toolbar Zoom */}
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ p: 1, bgcolor: "#f3f3f3", borderRadius: 1 }}>
+          <IconButton onClick={() => viewerRef.current?.zoom(1.1)}> {/* Zoom In */}
+            <ZoomInIcon />
+          </IconButton>
+
+          <IconButton onClick={() => viewerRef.current?.zoom(0.9)}> {/* Zoom Out */}
+            <ZoomOutIcon />
+          </IconButton>
+        </Stack>
+
+        {/* PDF Viewer */}
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <Box sx={{ flex: 1, overflowY: "auto" }}>
+            <Viewer ref={viewerRef} fileUrl={selectedPdf} plugins={[toolbarPluginInstance]} />
+          </Box>
+        </Worker>
+      </Paper>
+    </Grid>
+  );
+};
+
+export default PdfViewer;
 
 
 import { Worker, Viewer } from "@react-pdf-viewer/core";
