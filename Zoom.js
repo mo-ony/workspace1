@@ -1,3 +1,62 @@
+
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/toolbar/lib/styles/index.css";
+import { Box, Stack, IconButton } from "@mui/material";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+
+const PdfViewer = ({ pdfBase64 }) => {
+  const toolbarPluginInstance = toolbarPlugin();
+  const { ZoomInButton, ZoomOutButton, ZoomPopover } = toolbarPluginInstance;
+
+  return (
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Toolbar */}
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        justifyContent="center"
+        sx={{ p: 1, bgcolor: "#f3f3f3" }}
+      >
+        <ZoomOutButton>
+          {(props) => (
+            <IconButton onClick={props.onClick}>
+              <ZoomOutIcon />
+            </IconButton>
+          )}
+        </ZoomOutButton>
+
+        <ZoomPopover />
+
+        <ZoomInButton>
+          {(props) => (
+            <IconButton onClick={props.onClick}>
+              <ZoomInIcon />
+            </IconButton>
+          )}
+        </ZoomInButton>
+      </Stack>
+
+      {/* PDF Viewer */}
+      <Box sx={{ flex: 1 }}>
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+          <Viewer fileUrl={`data:application/pdf;base64,${pdfBase64}`} plugins={[toolbarPluginInstance]} />
+        </Worker>
+      </Box>
+    </Box>
+  );
+};
+
+export default PdfViewer;
+
+
+
+
+
+
 Yes! You can add zoom controls to your PDF viewer by using the `toolbarPlugin` from `@react-pdf-viewer/toolbar`.  
 
 ### **Steps to Add Zoom In/Out:**
