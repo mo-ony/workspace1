@@ -1,4 +1,4 @@
-
+$2a$10$Xb2z5iPmUah7PvbyGDEi5uPv/cC8rxgQTx1M9owqByfz5Gv1.Wm4S
 Here is an example of a row in the **user** table that you can use to test the login:  
 
 ### **Example User Record**  
