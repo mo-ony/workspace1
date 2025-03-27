@@ -1,3 +1,18 @@
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { AuthProvider } from "./AuthContext"; // Ensure AuthProvider is included
+
+const root = createRoot(document.getElementById("root"));
+root.render(
+  <BrowserRouter>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </BrowserRouter>
+);
+
 It looks like your **AuthProvider** is not properly defined or imported in your React project. Here’s how to fix it step by step:
 
 ---
