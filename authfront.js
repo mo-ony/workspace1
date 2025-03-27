@@ -13,7 +13,7 @@ Tu dois gérer **l'authentification globale** et la **redirection automatique** 
 ## **🔹 1. AuthContext.js (Gère l'authentification)**
 Crée un **contexte global** pour stocker le token et l'utilisateur.
 
-```javascript
+]
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
