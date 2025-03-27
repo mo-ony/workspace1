@@ -1,3 +1,151 @@
+It looks like your **AuthProvider** is not properly defined or imported in your React project. Here’s how to fix it step by step:
+
+---
+
+### ✅ **1. Ensure You Have an `AuthContext.js` File**
+Create a file **`AuthContext.js`** in your React project and define the `AuthProvider`.
+
+#### **AuthContext.js**
+```javascript
+import React, { createContext, useState, useEffect } from "react";
+import jwtDecode from "jwt-decode";
+
+// Create Auth Context
+const AuthContext = createContext();
+
+// AuthProvider Component
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser(decoded);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        setUser(null);
+      }
+    }
+  }, [token]);
+
+  const login = (newToken) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken("");
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// Custom Hook to Use Auth Context
+export const useAuth = () => React.useContext(AuthContext);
+```
+
+---
+
+### ✅ **2. Wrap Your App with `AuthProvider` in `index.js` or `App.js`**
+Make sure you wrap your entire app with **AuthProvider**.
+
+#### **`index.js`**
+```javascript
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { AuthProvider } from "./AuthContext"; // Import AuthProvider
+
+ReactDOM.render(
+  <AuthProvider>
+    <App />
+  </AuthProvider>,
+  document.getElementById("root")
+);
+```
+
+---
+
+### ✅ **3. Use `useAuth()` in Your Components**
+Now, inside your components where you need authentication (like `Login.js`), use the **`useAuth`** hook:
+
+#### **Login.js Example**
+```javascript
+import React, { useState } from "react";
+import { useAuth } from "./AuthContext";
+import axios from "axios";
+
+const Login = () => {
+  const { login } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:8080/api/auth/login", {
+        username,
+        password,
+      });
+      login(response.data.token); // Store token in AuthContext
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
+```
+
+---
+
+### ✅ **4. Restart Your React App**
+After making these changes, restart your React project:
+```sh
+npm start
+```
+or
+```sh
+yarn start
+```
+
+Let me know if you still have issues! 🚀
+
+
+
+
+
+
+
 $2a$10$Xb2z5iPmUah7PvbyGDEi5uPv/cC8rxgQTx1M9owqByfz5Gv1.Wm4S
 Here is an example of a row in the **user** table that you can use to test the login:  
 
