@@ -1,3 +1,59 @@
+
+Here is an example of a row in the **user** table that you can use to test the login:  
+
+### **Example User Record**  
+| id  | username  | email              | password (hashed)                          | is_first_login | failed_attempts | lock_time          | role  |  
+|-----|----------|--------------------|-------------------------------------------|---------------|----------------|--------------------|-------|  
+| 1   | testuser | test@example.com   | `$2a$10$7Qz6eHhtJv8Pz0j3qxyMEuYkD4.qK.TE` | true          | 0              | NULL               | USER  |  
+
+---
+
+### **Insert This User Into Your Database (MySQL Example)**  
+```sql
+INSERT INTO users (id, username, email, password, is_first_login, failed_attempts, lock_time, role)
+VALUES (1, 'testuser', 'test@example.com', '$2a$10$7Qz6eHhtJv8Pz0j3qxyMEuYkD4.qK.TE', true, 0, NULL, 'USER');
+```
+
+---
+
+### **Password for Testing**
+The hashed password **`$2a$10$7Qz6eHhtJv8Pz0j3qxyMEuYkD4.qK.TE`** corresponds to:  
+```plaintext
+Test@123
+```
+> This password is **BCrypt hashed**, so your backend must use **Spring Security’s PasswordEncoder** to verify it.
+
+---
+
+### **How to Generate Your Own Hashed Password**
+If you want to create a new password hash, you can use this Java code in **Spring Boot**:  
+```java
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+public class PasswordGenerator {
+    public static void main(String[] args) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String rawPassword = "Test@123";
+        String encodedPassword = encoder.encode(rawPassword);
+        System.out.println("Hashed Password: " + encodedPassword);
+    }
+}
+```
+This will output something like:
+```
+Hashed Password: $2a$10$Xb2z5iPmUah7PvbyGDEi5uPv/cC8rxgQTx1M9owqByfz5Gv1.Wm4S
+```
+You can then **store this hash in your database** instead of a plaintext password.
+
+---
+
+Now you can use:  
+✅ **Username:** `testuser`  
+✅ **Password:** `Test@123`  
+
+to test your login system. 🚀
+
+
 D'accord ! Voici la structure complète pour le **frontend en React (Vite + MUI + React Router)** qui gère :  
 
 ✅ **Page de connexion**  
