@@ -1,3 +1,75 @@
+v\\\L'erreur signifie probablement que **Spring Security** n'est pas ajouté à votre projet.  
+
+### **🔹 Solution : Ajouter Spring Security**
+Ajoutez cette dépendance dans votre **`pom.xml`** (si vous utilisez Maven) :
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+Puis, mettez à jour vos dépendances avec :
+
+```sh
+mvn clean install
+```
+
+---
+
+### **🔹 Vérifier l'import**
+Après avoir ajouté **Spring Security**, vérifiez que l'import est correct :
+
+```java
+import org.springframework.security.crypto.password.PasswordEncoder;
+```
+
+---
+
+### **🔹 Configuration d'un `PasswordEncoder` Bean**
+Dans votre classe de configuration **Spring Boot**, ajoutez :
+
+
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+
+
+Puis, utilisez ce `PasswordEncoder` dans votre service d'authentification :
+
+```java
+@Autowired
+private PasswordEncoder passwordEncoder;
+```
+
+---
+
+### **🔹 Vérifier si ça fonctionne**
+Essayez d'encoder un mot de passe dans votre application :
+
+```java
+String encodedPassword = passwordEncoder.encode("monMotDePasse");
+System.out.println(encodedPassword);
+```
+
+✅ Maintenant, `PasswordEncoder` devrait être trouvé et fonctionnel ! 🚀
+
+
+
+
+
 D'accord, voici le backend **complet** en **Spring Boot** avec toutes les classes manquantes :  
 
 ✅ **Gestion des utilisateurs (User, UserRepository, UserService)**  
