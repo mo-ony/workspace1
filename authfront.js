@@ -1,3 +1,161 @@
+Tu dois gérer **l'authentification globale** et la **redirection automatique** si l'utilisateur n'est pas connecté. Voici les étapes :  
+
+---
+
+## **📌 Étapes à suivre**
+1. **Créer `AuthContext.js`** pour gérer l'authentification globale.  
+2. **Créer une route protégée (`PrivateRoute`)** qui bloque l'accès aux pages si l'utilisateur n'est pas connecté.  
+3. **Masquer le `Header` sur la page de connexion.**  
+4. **Configurer `App.js` avec le `Router` et les routes protégées.**  
+
+---
+
+## **🔹 1. AuthContext.js (Gère l'authentification)**
+Crée un **contexte global** pour stocker le token et l'utilisateur.
+
+```javascript
+import React, { createContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("token"));
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUser(decoded);
+            } catch (error) {
+                console.error("Token invalide !");
+                logout();
+            }
+        }
+    }, [token]);
+
+    const login = async (username, password) => {
+        try {
+            const res = await axios.post("http://localhost:8080/api/auth/login", { username, password });
+            const { accessToken, firstTimeLogin } = res.data;
+
+            setToken(accessToken);
+            localStorage.setItem("token", accessToken);
+            setUser(jwtDecode(accessToken));
+
+            if (firstTimeLogin) {
+                navigate("/password-reset");
+            } else {
+                navigate("/dashboard");
+            }
+        } catch (error) {
+            alert("Échec de la connexion !");
+        }
+    };
+
+    const logout = () => {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, token, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export default AuthContext;
+```
+
+---
+
+## **🔹 2. Créer `PrivateRoute.js` (Protéger les pages)**
+Empêche d'accéder aux pages **sans être connecté**.
+
+```javascript
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+
+const PrivateRoute = ({ children }) => {
+    const { token } = useContext(AuthContext);
+
+    return token ? children : <Navigate to="/login" />;
+};
+
+export default PrivateRoute;
+```
+
+---
+
+## **🔹 3. Masquer `Header` sur la page de connexion**
+Dans `App.js`, **affiche le `Header` sauf sur `/login`**.
+
+```javascript
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AuthContext, { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./routes/PrivateRoute";
+import Header from "./components/Header";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import PasswordReset from "./pages/PasswordReset";
+
+const App = () => {
+    return (
+        <AuthProvider>
+            <Router>
+                <AppContent />
+            </Router>
+        </AuthProvider>
+    );
+};
+
+const AppContent = () => {
+    const { token } = useContext(AuthContext);
+    const showHeader = window.location.pathname !== "/login";
+
+    return (
+        <>
+            {showHeader && token && <Header />}
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/password-reset" element={<PrivateRoute><PasswordReset /></PrivateRoute>} />
+                <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+                <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+        </>
+    );
+};
+
+export default App;
+```
+
+---
+
+## **📌 Résumé**
+✅ **Empêche l'accès aux pages sans être connecté.**  
+✅ **Redirige automatiquement vers `/login` si non connecté.**  
+✅ **Masque le `Header` sur la page de connexion.**  
+✅ **Gère la connexion/déconnexion avec `AuthContext`.**  
+
+🔹 **Résultat attendu** :
+- Si non connecté → Redirigé vers `/login`.  
+- Si connecté → Accès normal.  
+- Header **non affiché sur `/login`**, mais visible ailleurs.  
+
+🔥 **Maintenant, ton front est sécurisé et bien structuré !** 🚀
+
+
+
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
