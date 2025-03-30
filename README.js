@@ -1,4 +1,52 @@
 
+
+The issue occurs because IIS tries to find a physical file matching the URL when you refresh or navigate directly to a route in your Single Page Application (SPA). Since SPAs handle routing on the client side, IIS returns a **404 Not Found** error for any non-root route.
+
+### **Solution: Configure IIS to Serve the SPA Correctly**
+You need to modify your **web.config** file to rewrite all requests to your **index.html** so that your SPA can handle routing.
+
+#### **Steps to Fix:**
+1. **Create or modify the `web.config` file** in your SPA's root folder (where your `index.html` is located).
+2. **Add the following rewrite rule:**
+   
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <configuration>
+     <system.webServer>
+       <rewrite>
+         <rules>
+           <rule name="SPA Rewrite" stopProcessing="true">
+             <match url=".*" />
+             <conditions logicalGrouping="MatchAll">
+               <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+               <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+             </conditions>
+             <action type="Rewrite" url="/index.html" />
+           </rule>
+         </rules>
+       </rewrite>
+     </system.webServer>
+   </configuration>
+   ```
+
+3. **Restart IIS** to apply the changes:
+   - Open **Command Prompt** as Administrator and run:  
+     ```sh
+     iisreset
+     ```
+
+### **Explanation:**
+- The rule matches all requests (`url=".*"`).
+- It **excludes existing files and directories** to avoid rewriting API calls or assets.
+- All other requests are rewritten to **index.html**, letting the frontend handle routing.
+
+Now, when you refresh or access a deep link, IIS will serve `index.html`, and your frontend framework (React, Angular, Vue, etc.) will take care of routing.
+
+
+
+
+
+
 Bonjour [Nom du RH],
 
 Je vous prie de bien vouloir trouver en pièce jointe les justificatifs pour le remboursement de mes frais de transport liés à l’Oftar du 24 mars.
