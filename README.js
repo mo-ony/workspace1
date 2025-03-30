@@ -1,5 +1,82 @@
 
 
+
+import React, { createContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+    const [token, setToken] = useState(localStorage.getItem("token") || null);
+    const [user, setUser] = useState(token ? jwtDecode(token) : null);
+    const navigate = useNavigate();
+    let inactivityTimer;
+
+    const login = async (username, password) => {
+        try {
+            const res = await axios.post("http://localhost:8080/api/auth/login", { username, password });
+            const { accessToken, firstTimeLogin } = res.data;
+
+            setToken(accessToken);
+            localStorage.setItem("token", accessToken);
+            setUser(jwtDecode(accessToken));
+
+            resetInactivityTimer(); // Réinitialise le timer après connexion
+
+            if (firstTimeLogin) {
+                navigate("/password-reset");
+            } else {
+                navigate("/dashboard");
+            }
+        } catch (error) {
+            alert("Échec de la connexion !");
+        }
+    };
+
+    const logout = () => {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
+    const resetInactivityTimer = () => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            alert("Session expirée ! Vous allez être déconnecté.");
+            logout();
+        }, 10 * 60 * 1000); // 10 minutes
+    };
+
+    useEffect(() => {
+        // Écoute des événements utilisateur pour réinitialiser le timer
+        const events = ["mousemove", "keydown", "click"];
+        events.forEach(event => window.addEventListener(event, resetInactivityTimer));
+
+        return () => {
+            events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+            clearTimeout(inactivityTimer);
+        };
+    }, []);
+
+    return (
+        <AuthContext.Provider value={{ token, user, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export default AuthContext;
+
+
+
+
+
+
+
+
 The issue occurs because IIS tries to find a physical file matching the URL when you refresh or navigate directly to a route in your Single Page Application (SPA). Since SPAs handle routing on the client side, IIS returns a **404 Not Found** error for any non-root route.
 
 ### **Solution: Configure IIS to Serve the SPA Correctly**
