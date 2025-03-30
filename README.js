@@ -1,5 +1,18 @@
 
+**Objet : Problème d'accès à l'espace client – Mhenna Bentouta**  
 
+Bonjour l'équipe,  
+
+Je reviens vers vous concernant la réclamation du client **Mhenna Bentouta**, qui ne parvient toujours pas à accéder à son espace client. Il reçoit le message **"Account locked"** (voir capture d'écran ci-dessous).  
+
+J'ai également testé de mon côté et j'obtiens le même message d'erreur aussi bien en **production** qu'en **préproduction**.  
+
+Pouvez-vous vérifier et me tenir informée ?  
+
+Merci d'avance pour votre retour.  
+
+Cordialement,  
+[Votre Nom]
 
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
