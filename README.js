@@ -1,3 +1,29 @@
+
+Alors pour cette semaine, on a procédé au déploiement de la solution, et on a donner la main aux Ops pour qu’ils puissent commencer les tests.  
+Ils ont remonté quelques anomalies, principalement liées à l’authentification et au temps d’expiration de session — qu’on a rapidement corrigées.
+
+Côté sécurité, on a intégré le certificat SSL au nom du domaine, ce qui sécurise bien les échanges.  
+Il reste juste une petite adaptation dans le code pour utiliser correctement le nom de domaine dans les appels backend — c’est surtout une question de configuration.
+
+Sur le plan fonctionnel, il ne reste que des détails à finaliser :
+- L affichage des contrats indexés par date d’archivage, comme demandé par Amine,  
+- Et le traitement de quelques cas particuliers sur ODS, notamment les doublons ou les contrats avec deux titulaires.
+
+Concernant le document GAD, on a déjà entamé sa rédaction. On est à environ 20 % d’avancement.  
+La priorité en ce moment, c’est justement de continuer la rédaction de ce livrable.
+
+Et enfin, pour la partie gouvernance, c’est à Djaafer de se prononcer.
+
+Voilà pour moi !
+
+
+
+
+
+
+
+
+
 ù
 Great! Now that you have the **private key** and the **`.crt`** file, follow these steps to install the certificate in IIS:  
 
