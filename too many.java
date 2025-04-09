@@ -1,3 +1,154 @@
+
+Parfait ! Si ta procédure peut **retourner plusieurs lignes**, il faut qu’elle utilise un **curseur REF_CURSOR** en sortie.
+
+---
+
+### 1. **Supposition sur la procédure PL/SQL**
+
+Ta procédure doit ressembler à ceci :
+
+```plsql
+PROCEDURE get_user_metadata(
+    p_num_contrat IN VARCHAR2,
+    code_produit IN VARCHAR2,
+    p_nom_in IN VARCHAR2,
+    p_prenom_in IN VARCHAR2,
+    p_metadata OUT SYS_REFCURSOR
+)
+```
+
+Elle retourne plusieurs résultats dans le curseur `p_metadata`.
+
+---
+
+### 2. **DTO : Pas de changement majeur**
+On garde la même classe :
+
+```java
+public class UserMetadataDTO {
+    private String nom;
+    private String prenom;
+    private String njf;
+    private String dateNaissance;
+    private String capitalAssure;
+    private String montantPrime;
+    private String partenaine;
+    private String dateAdhesion;
+
+    // Getters & Setters
+}
+```
+
+---
+
+### 3. **Service : Adapter pour gérer le REF_CURSOR**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.*;
+
+@Service
+public class UserMetadataService {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private SimpleJdbcCall simpleJdbcCall;
+
+    @PostConstruct
+    public void init() {
+        simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+            .withProcedureName("get_user_metadata")
+            .declareParameters(
+                new SqlParameter("p_num_contrat", Types.VARCHAR),
+                new SqlParameter("code_produit", Types.VARCHAR),
+                new SqlParameter("p_nom_in", Types.VARCHAR),
+                new SqlParameter("p_prenom_in", Types.VARCHAR),
+                new SqlOutParameter("p_metadata", oracle.jdbc.OracleTypes.CURSOR, new UserMetadataRowMapper())
+            );
+    }
+
+    public List<UserMetadataDTO> getUserMetadata(String numContrat, String codeProduit, String nomIn, String prenomIn) {
+        Map<String, Object> result = simpleJdbcCall.execute(Map.of(
+            "p_num_contrat", numContrat,
+            "code_produit", codeProduit,
+            "p_nom_in", nomIn,
+            "p_prenom_in", prenomIn
+        ));
+
+        return (List<UserMetadataDTO>) result.get("p_metadata");
+    }
+
+    private static class UserMetadataRowMapper implements RowMapper<UserMetadataDTO> {
+        @Override
+        public UserMetadataDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserMetadataDTO dto = new UserMetadataDTO();
+            dto.setNom(rs.getString("nom"));
+            dto.setPrenom(rs.getString("prenom"));
+            dto.setNjf(rs.getString("njf"));
+            dto.setDateNaissance(rs.getString("date_naissance"));
+            dto.setCapitalAssure(rs.getString("capital_assure"));
+            dto.setMontantPrime(rs.getString("mnt_prime"));
+            dto.setPartenaine(rs.getString("partenaine"));
+            dto.setDateAdhesion(rs.getString("date_adhesion"));
+            return dto;
+        }
+    }
+}
+```
+
+---
+
+### 4. **Controller : retourner une liste**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/metadata")
+public class UserMetadataController {
+
+    @Autowired
+    private UserMetadataService userMetadataService;
+
+    @GetMapping
+    public List<UserMetadataDTO> getUserMetadata(
+        @RequestParam String numContrat,
+        @RequestParam String codeProduit,
+        @RequestParam(required = false) String nom,
+        @RequestParam(required = false) String prenom
+    ) {
+        return userMetadataService.getUserMetadata(numContrat, codeProduit, nom, prenom);
+    }
+}
+```
+
+---
+
+### Résultat
+
+Quand tu appelles `/api/metadata?...`, tu obtiens une **liste d’objets JSON** avec tous les résultats trouvés par la procédure.
+
+Souhaites-tu que je t’aide à faire un test ou à gérer les cas sans résultat ?
+
+
+
+
+
 Merci pour le partage du code 💡. Effectivement, **la procédure actuelle ne peut retourner qu’une seule ligne**, car elle utilise des `OUT VARCHAR2`, et soulève une exception si plusieurs lignes sont retournées (`TOO_MANY_ROWS`).
 
 ---
