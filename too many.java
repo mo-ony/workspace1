@@ -1,4 +1,138 @@
 
+
+Merci pour la précision ! Si `GetUserMetadata` est un **repository** qui appelle une procédure stockée, on va structurer le code ainsi :
+
+---
+
+### 1. **Repository**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
+
+import javax.annotation.PostConstruct;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public class GetUserMetadataRepository {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private SimpleJdbcCall simpleJdbcCall;
+
+    @PostConstruct
+    public void init() {
+        this.simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+            .withProcedureName("get_user_metadata")
+            .declareParameters(
+                new SqlParameter("p_num_contrat", Types.VARCHAR),
+                new SqlParameter("code_produit", Types.VARCHAR),
+                new SqlParameter("p_nom_in", Types.VARCHAR),
+                new SqlParameter("p_prenom_in", Types.VARCHAR),
+                new SqlOutParameter("p_metadata", oracle.jdbc.OracleTypes.CURSOR, new UserMetadataRowMapper())
+            );
+    }
+
+    public List<UserMetadataDTO> getUserMetadata(String numContrat, String codeProduit, String nom, String prenom) {
+        Map<String, Object> result = simpleJdbcCall.execute(Map.of(
+            "p_num_contrat", numContrat,
+            "code_produit", codeProduit,
+            "p_nom_in", nom,
+            "p_prenom_in", prenom
+        ));
+
+        return (List<UserMetadataDTO>) result.get("p_metadata");
+    }
+
+    private static class UserMetadataRowMapper implements RowMapper<UserMetadataDTO> {
+        @Override
+        public UserMetadataDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserMetadataDTO dto = new UserMetadataDTO();
+            dto.setNom(rs.getString("nom"));
+            dto.setPrenom(rs.getString("prenom"));
+            dto.setNjf(rs.getString("njf"));
+            dto.setDateNaissance(rs.getString("date_naissance"));
+            dto.setCapitalAssure(rs.getString("capital_assure"));
+            dto.setMontantPrime(rs.getString("mnt_prime"));
+            dto.setPartenaine(rs.getString("partenaine"));
+            dto.setDateAdhesion(rs.getString("date_adhesion"));
+            return dto;
+        }
+    }
+}
+```
+
+---
+
+### 2. **Service**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UserMetadataService {
+
+    @Autowired
+    private GetUserMetadataRepository repository;
+
+    public List<UserMetadataDTO> getUserMetadata(String numContrat, String codeProduit, String nom, String prenom) {
+        return repository.getUserMetadata(numContrat, codeProduit, nom, prenom);
+    }
+}
+```
+
+---
+
+### 3. **Controller**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/metadata")
+public class UserMetadataController {
+
+    @Autowired
+    private UserMetadataService service;
+
+    @GetMapping
+    public List<UserMetadataDTO> getMetadata(
+        @RequestParam String numContrat,
+        @RequestParam String codeProduit,
+        @RequestParam(required = false) String nom,
+        @RequestParam(required = false) String prenom
+    ) {
+        return service.getUserMetadata(numContrat, codeProduit, nom, prenom);
+    }
+}
+```
+
+---
+
+Souhaites-tu aussi un exemple de réponse JSON ou un test rapide avec Postman ?
+
+
+
+
+
+
+
 Parfait ! Si ta procédure peut **retourner plusieurs lignes**, il faut qu’elle utilise un **curseur REF_CURSOR** en sortie.
 
 ---
