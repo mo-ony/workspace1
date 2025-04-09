@@ -1,3 +1,11 @@
+const selectFilter = (level, value) => {
+  setSelectedFilters((prevFilters) => {
+    // Update only the filter level that was clicked (like 'mois'), preserving the other filters
+    return { ...prevFilters, [level]: value };
+  });
+};
+
+
 const getGroupedData = (data) => {
   const grouped = {};
 
