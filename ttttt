@@ -1,0 +1,5 @@
+setProcessedFiles(prevSet => {
+        const updatedSet = new Set(prevSet);
+        updatedSet.delete(fileNameToDelete);
+        return updatedSet;
+    });
