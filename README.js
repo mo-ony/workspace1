@@ -1,3 +1,22 @@
+Voici une version moins formelle :
+
+---
+
+Je viens de discuter avec Lydia,  
+Il y a une souscription qui n’a pas abouti, du coup le contrat n’a pas été généré. Côté SATIM, la transaction est marquée comme "reversed", donc non finalisée.  
+
+Par contre, le client dit avoir été débité, et la transaction apparaît bien sur le compte de Cardif — le montant a été reçu.  
+
+À mon avis, c’est un souci au niveau de SATIM. Il faudrait les contacter pour confirmer le statut réel de la transaction, et voir ensuite s’il faut rembourser ou pas.
+
+---
+
+Tu veux que je t’aide à l’envoyer par mail ou par chat ?
+
+
+
+
+
 
 Alors pour cette semaine, on a procédé au déploiement de la solution, et on a donner la main aux Ops pour qu’ils puissent commencer les tests.  
 Ils ont remonté quelques anomalies, principalement liées à l’authentification et au temps d’expiration de session — qu’on a rapidement corrigées.
