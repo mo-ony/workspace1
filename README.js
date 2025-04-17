@@ -1,3 +1,33 @@
+
+Bien sûr Fatima, voici une suggestion de mail de relance, polie et professionnelle :
+
+---
+
+**Objet : Relance concernant le remboursement des frais de transport**
+
+Bonjour [Prénom du DRH],
+
+Je me permets de vous relancer concernant mon précédent mail envoyé il y a un peu plus de trois semaines au sujet du remboursement de mes frais de transport.
+
+N’ayant pas encore eu de retour, je voulais m’assurer que ma demande avait bien été reçue. Je reste bien entendu à votre disposition pour tout complément d’information ou document nécessaire.
+
+Je vous remercie par avance pour votre retour,  
+Bien cordialement,  
+**Fatima [Ton Nom de famille]**
+
+---
+
+Souhaites-tu que je l’adapte à un ton un peu plus familier ou tu préfères rester formelle ?
+
+
+
+
+
+
+
+
+
+
 Voici une version moins formelle :
 
 ---
