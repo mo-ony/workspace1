@@ -1,14 +1,25 @@
 summary
 
-Le projet de Gestion Électronique des Documents (GED) s'inscrit dans la stratégie globale du groupe visant à devenir un assureur digital de référence.
-Il répond à l'objectif d'augmenter l'efficacité, la flexibilité et la qualité des services opérationnels en mettant en place une solution moderne et sécurisée pour la gestion documentaire.
+Le projet de Gestion Électronique des Documents (GED) s'inscrit dans la stratégie globale du groupe, visant à devenir un assureur digital de référence.
+Il a pour ambition de moderniser la gestion documentaire des opérations en mettant en place une solution fiable et sécurisée, permettant de :
 
-La solution mise en œuvre permet notamment de :
+Numériser et archiver les documents de manière conforme aux standards de sécurité.
 
-Numériser et archiver les documents de manière fiable et conforme aux standards de sécurité.
+Faciliter le stockage, le partage et la recherche d'informations critiques.
 
-Faciliter le stockage, le partage et la recherche d'informations critiques pour les équipes métier.
+Organiser et centraliser l'ensemble de la documentation liée aux processus métiers.
 
-Organiser et centraliser l'ensemble de la documentation relative aux processus opérationnels.
+Disposer d'un référentiel unique pour les équipes opérationnelles, garantissant traçabilité et performance.
 
-Offrir un référentiel documentaire unique pour le service Opérations, garantissant une meilleure traçabilité et une exploitation optimisée des données.
+L'objectif principal est de remplacer une solution GED obsolète par une nouvelle plateforme moderne et optimisée, afin d'améliorer l’accessibilité et l’exploitation des documents métiers.
+
+Les principaux axes stratégiques de l'initiative sont :
+
+Migration et continuité : reprise et intégration du stock documentaire existant vers la nouvelle plateforme.
+
+Indexation et exploitation avancée des documents : mise en œuvre d'un mécanisme d’indexation avec récupération automatique des métadonnées depuis le système interne ODS (Operational Data Store).
+
+Structuration et gouvernance documentaire : organisation rigoureuse et classification normalisée des documents métiers.
+
+Ce projet s'inscrit pleinement dans l'objectif de transformation digitale du groupe, en renforçant l'efficacité opérationnelle et la maîtrise de l'information.
+
