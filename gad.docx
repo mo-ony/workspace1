@@ -54,15 +54,9 @@ Elle doit également garantir :
 - **La traçabilité complète** des accès, des opérations de consultation et des manipulations sur les documents sensibles,
 - **La capacité d’audit** pour assurer la conformité aux exigences internes et réglementaires.
 
----
+----------------------------
 
-✅ Cette version :
-- Est cohérente entre les trois sections.
-- Utilise un style direct et professionnel (adapté à un GAD).
-- Reformule pour éviter les répétitions inutiles ("permettre de" / "sécuriser" placés dans des phrases plus dynamiques).
-
----
-
-Veux-tu que l’on continue tout de suite avec la section **Business Layer (4.1 / 4.2 / 4.3)** ?  
-(Normalement c’est le bon moment pour enchaîner si tu veux garder le même style rédactionnel sur tout le document.) 🚀
+3.6 Linked Projects
+Le projet GED est connecté au système ODS (Operational Data Store), utilisé pour alimenter la nouvelle plateforme en métadonnées extraites automatiquement des contrats.
+Cette liaison garantit la fiabilité des données indexées et facilite l'exploitation des documents dans les processus métiers.
 
