@@ -62,3 +62,30 @@ Cette liaison garantit la fiabilité des données indexées et facilite l'exploi
 ------------------------------------------------------------------------------------
 
 Le projet concerne principalement le processus n°4.1.3, relatif à la gestion des contrats clients. La nouvelle GED vise à numériser, indexer (via les métadonnées de l’ODS) et sécuriser l’accès à ces documents, afin d’améliorer leur exploitation, garantir les délais de traitement et assurer la traçabilité.
+
+
+---
+
+### 5.2 Global Functional Requirement
+
+L'application GED (Gestion Électronique des Documents) doit répondre à un ensemble de besoins fonctionnels permettant une gestion fluide et efficace des contrats. Les exigences fonctionnelles principales incluent :
+
+1. **Authentification** : L'application doit permettre une authentification sécurisée des utilisateurs via un système de login simple. Chaque utilisateur aura accès à une interface personnalisée selon ses droits d'accès.
+
+2. **Indexation des Contrats** : Une interface d'indexation permettra aux utilisateurs de saisir les informations essentielles (partenaire, produit, année, mois) et de télécharger des contrats associés. Les métadonnées de chaque contrat doivent être extraites automatiquement via un autre système interne (ODS).
+
+3. **Visualisation et Recherche** : Une page dédiée permettra aux utilisateurs de visualiser les contrats indexés et de les rechercher par différents critères (nom/prénom, numéro de police). La recherche pourra être filtrée par année, mois, partenaire et produit via un menu de sélection.
+
+4. **Gestion des Contrats** : Les utilisateurs auront la possibilité de visualiser, indexer et gérer les contrats de manière intuitive, avec une option de tri et de recherche rapide dans un tableau.
+
+Ces exigences doivent garantir une gestion centralisée et une facilité d'accès aux documents, tout en respectant les contraintes de sécurité et de performance.
+
+________________________
+
+7.1.1 Processus lié aux Données
+Le projet GED prévoit un cadre simple pour assurer la cohérence des métadonnées associées aux contrats clients. Les métadonnées sont automatiquement récupérées depuis le système ODS au moment de l’indexation, garantissant une structuration homogène sans intervention manuelle. La traçabilité des accès et la centralisation des documents permettent de répondre aux exigences internes de conformité et d'efficacité.
+
+7.1.2 Objectifs de Qualité des Données
+La qualité des données repose sur l’exactitude des métadonnées extraites automatiquement, l’unicité des documents archivés et la facilité d’accès à l’information. L’objectif est de permettre une recherche rapide, fiable et sécurisée des contrats archivés, tout en limitant les erreurs humaines liées à l’indexation.
+
+
