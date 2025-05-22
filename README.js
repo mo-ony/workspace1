@@ -1,3 +1,12 @@
+Un exemple de format utilisé dans le script est le suivant :
+
+UPDATE ods_table
+SET nom = DBMS_RANDOM.STRING('U', 10),
+    prenom = DBMS_RANDOM.STRING('U', 8),
+    email = LOWER(DBMS_RANDOM.STRING('U', 5)) || '@exemple.com'
+WHERE ...
+Le script complet ayant servi à l’anonymisation est joint à ce document en pièce jointe.
+
 
 Bien sûr Fatima, voici une suggestion de mail de relance, polie et professionnelle :
 
