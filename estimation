@@ -1,0 +1,46 @@
+Objet : Estimation de charge pour le projet XXXX – Traduction du besoin métier en charge projet IT
+
+Bonjour  ,
+
+Suite à la réception de l’expression de besoin métier du projet XXXX, je vous remercie pour le partage du document.
+
+Vous trouverez ci-dessous une estimation prévisionnelle des charges par phase, en tenant compte des éléments actuellement disponibles. Il est toutefois nécessaire de reformuler l’expression de besoin métier en une version technique (cahier des charges IT) afin de pouvoir affiner les estimations.
+
+🔧 Phases du projet et estimations associées (à temps plein) :
+
+Cadrage et rédaction du besoin technique (cahier des charges IT)
+⏱️ ~ 5 jours
+Traduction du besoin métier en spécifications IT détaillées + identification des dépendances (authentification SESAME, Oracle, sécurité…).
+Préparation des environnements
+⏱️ ~ 6 jours
+Génération des certificats
+Installation et configuration de la base Oracle
+Acquisition et intégration des paramètres d’authentification SESAME
+Création de la structure initiale de la BDD
+Phase de développement
+⏱️ ~ 20 jours
+Développement Front-End
+Développement Back-End
+Scripts de base de données
+⚠️ Suivie en mode agile avec points hebdomadaires métiers
+Déploiement technique
+⏱️ ~ 3 jours
+Mise en production
+Configuration des environnements cibles
+Mise en place des sauvegardes BDD, TDE, etc.
+Tests de validation (UAT)
+⏱️ ~ 4 jours
+Accompagnement des utilisateurs
+Correction des éventuels retours
+Rédaction du GAD (guide d’administration et de déploiement)
+⏱️ ~ 2 jours
+Présentation au groupe et clôture
+⏱️ ~ 1 jour
+🕒 Durée estimée totale : ~41 jours ouvrés
+
+⚠️ Cette estimation est établie sur la base d’un engagement à temps plein sur le projet (travail exclusif par jour). En cas de multitâches ou d’autres priorités en parallèle, la durée réelle pourra s’étendre proportionnellement.
+Cette estimation reste indicative et sera ajustée après un atelier de cadrage IT, nécessaire pour consolider les hypothèses techniques et valider le périmètre.
+
+Je vous propose de planifier une réunion dans les prochains jours afin de lancer cette phase.
+
+Bien cordialement,
