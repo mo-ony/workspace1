@@ -1,0 +1,121 @@
+You're exactly on the right track — what you want is called a **reverse proxy**: the **frontend server (IIS)** will forward requests like `/v1/...` to your **backend server (Spring Boot)**, which is only accessible inside the internal network.
+
+---
+
+### ✅ Goal Recap
+
+* **Frontend (React)**: deployed and accessible publicly via IIS
+* **Backend (Spring Boot)**: only accessible internally
+* **Clients**: access frontend only, but you want frontend to proxy backend requests
+
+So:
+
+* `Client → http://yourdomain.com/v1/...`
+* `IIS → internally forwards to → http://INTERNAL_BACKEND_IP:8081/v1/...`
+
+---
+
+### ✅ Solution: Reverse Proxy via IIS (URL Rewrite + ARR)
+
+You'll configure IIS to proxy requests from `/v1/*` to your internal Spring Boot backend.
+
+---
+
+### 🔧 Step-by-Step Setup (IIS)
+
+#### ✅ 1. Install required IIS modules:
+
+* **Application Request Routing (ARR)**
+* **URL Rewrite**
+
+Install via **Web Platform Installer** or download:
+
+* ARR: [https://www.iis.net/downloads/microsoft/application-request-routing](https://www.iis.net/downloads/microsoft/application-request-routing)
+* URL Rewrite: [https://www.iis.net/downloads/microsoft/url-rewrite](https://www.iis.net/downloads/microsoft/url-rewrite)
+
+---
+
+#### ✅ 2. Enable Proxy in ARR
+
+* Open **IIS Manager**
+* Click your **server name** (not site)
+* Go to **"Application Request Routing Cache"**
+* On the right, click **"Server Proxy Settings"**
+* Check **"Enable proxy"**
+* Apply
+
+---
+
+#### ✅ 3. Add URL Rewrite Rule to the site
+
+* Go to your **React frontend site** in IIS
+* Open **"URL Rewrite"**
+* Add **New Rule → Inbound Rules → Blank rule**
+
+Configure like this:
+
+* **Name**: `ProxyToBackend`
+* **Requested URL**: *Matches the Pattern*
+* **Using**: *Regular Expressions*
+* **Pattern**: `^v1/(.*)`
+
+Under **Conditions**: leave empty.
+
+Under **Action**:
+
+* **Action Type**: *Rewrite*
+* **Rewrite URL**: `http://INTERNAL_BACKEND_IP:8081/v1/{R:1}`
+* Check **"Append query string"**
+* Check **"Stop processing of subsequent rules"**
+
+---
+
+#### ✅ 4. Adjust CORS in Spring Boot
+
+Since frontend and backend are now **on the same origin (from client’s perspective)**, no more CORS problem if everything goes through `/v1`.
+
+Still, it’s good to make sure backend responds properly to internal calls from frontend server.
+
+---
+
+### ✅ Now From Your React Frontend:
+
+You just call:
+
+```js
+fetch("/v1/api/endpoint")
+```
+
+And IIS handles the rest — forwarding to `http://internal_backend_ip:8081/v1/api/endpoint`.
+
+---
+
+### Optional: Make it Flexible with `.env`
+
+In React:
+
+```env
+REACT_APP_API_PREFIX=/v1
+```
+
+Then use:
+
+```js
+fetch(`${process.env.REACT_APP_API_PREFIX}/api/endpoint`)
+```
+
+---
+
+### ✅ Summary
+
+| Step | Action                                                         |
+| ---- | -------------------------------------------------------------- |
+| 1    | Install ARR + URL Rewrite on IIS                               |
+| 2    | Enable Proxy in ARR                                            |
+| 3    | Set URL Rewrite rule to forward `/v1/*` to internal backend IP |
+| 4    | Use `/v1/...` in frontend requests                             |
+| 5    | No CORS needed anymore                                         |
+
+---
+
+Would you like me to generate the `web.config` file for this reverse proxy rule?
