@@ -1,0 +1,32 @@
+📧 Objet : Estimation de la charge de travail – Application interne de gestion des adhésions
+Madame, Monsieur,
+
+Dans le cadre du développement de l’application de gestion des adhésions en environnement sécurisé, vous trouverez ci-dessous une première estimation de la charge de travail, établie sur la base d’un engagement à temps plein, en cohérence avec les exigences techniques et fonctionnelles exprimées.
+
+🧮 Estimation par type de développement
+Type de développement	Objectif	Portée	Estimation (jours)	Estimation (semaines)
+Phase de cadrage	Définir les processus métier, rôles, besoins et contraintes	Globale	10 j	2 sem
+Étude de faisabilité	Valider l’intégration technique dans un environnement fermé	Technique	5 j	1 sem
+Conception fonctionnelle et technique	Modéliser l’application et structurer les interfaces	Globale	15 j	3 sem
+Développement d’infrastructure applicative	Implémenter l’architecture technique, sécurité, base de données et interconnexions internes	Transverse	50 j	10 sem
+Développement métier	Développer les logiques spécifiques à l’adhésion, au traitement, à la décision, etc.	Modulaire	106 j	21,2 sem
+Tests et validation	Vérifier la conformité fonctionnelle et technique (TU, UAT, corrections)	Qualité	18 j	3,5 sem
+Déploiement technique	Installer l’application, configurer les environnements et la sécurité	Technique	10 j	2 sem
+Rédaction du GAD et clôture	Documenter l’architecture, présenter et finaliser le projet	Documentaire	25 j	5 sem
+🧮 Total estimé			239 j	47,8 sem
+✅ Contraintes spécifiques prises en compte
+Environnement fermé (aucun accès Internet)
+Interconnexion exclusive avec : SYRTA, SYBAL, ODS
+Aucune API externe ni envoi de mails sortants
+Authentification via SESAME, intégration de certificats et TDE
+Développement réalisé par un seul développeur à temps plein
+Suivi projet en mode agile avec points hebdomadaires
+📝 Conclusion
+Cette estimation est indicative et sera affinée à l’issue de l’atelier de cadrage IT, indispensable pour consolider les hypothèses techniques et valider le périmètre définitif.
+
+Je reste à votre disposition pour toute adaptation ou transmission au format PDF/Word.
+
+Cordialement,
+[Votre nom]
+Développeur — Projet Adhésions Internes
+
